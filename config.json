@@ -1,0 +1,33 @@
+{
+  "weights": {
+    "ingredient_match": 0.45,
+    "region_weight": 0.25,
+    "diet_time_fit": 0.10,
+    "popularity": 0.05,
+    "protein_w": 0.0
+  },
+  "protein_weight_options": [0.0, 0.15, 0.25],
+  "protein_target_g": 25.0,
+  "protein_boost_ingredient_threshold": 0.60,
+  "default_state": "Maharashtra",
+  "pantry_items": [
+    "oil",
+    "salt",
+    "water",
+    "turmeric",
+    "mustard seeds",
+    "cumin seeds",
+    "green chilli",
+    "ginger",
+    "garlic",
+    "curry leaves",
+    "coriander leaves",
+    "lemon juice",
+    "red chilli powder",
+    "hing",
+    "asafoetida",
+    "sugar",
+    "ghee"
+  ]
+}
+
