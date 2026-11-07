@@ -9,6 +9,8 @@ data/processed/*
 !data/processed/.gitkeep
 outputs/*
 !outputs/.gitkeep
+data/cache/*
+!data/cache/.gitkeep
 *.gguf
 *.bin
 *.safetensors
