@@ -112,12 +112,24 @@
 
 ---
 
+## User Corrections & Addenda (Verified)
+
+- [x] **C1** FoodSeg coverage corrected: 6/8 nominal classes (ginger excluded from target list). Checkpoint downloaded and tested: `names: {0: 'food'}` (0/8 classes), 211.80 MB, 46.7 ms/image on RTX 5050. Rejected.
+- [x] **C2** YOLO fine-tune pipeline prepared: `src/intake_yolo_dataset.py` (80/10/10 partitioner) and `src/train_yolo.py` (YOLO11n, 40 epochs, patience 10, imgsz 640, workers 2, batch 16).
+- [x] **C3** `demo_ready` column added across all 395 rows of `data/raw/maharashtra_drafts.csv` (default `no`, 0 set to `yes`; only human sets `yes`).
+- [x] **C4** 30 Tier 1 vegetarian dishes processed: 20 dishes verified with >= 2 independent HTTP 200 sources, redrafted with 134 unique step sentences (100.0% unique ratio, target > 80%). 10 unverified dishes left blank with `review_flag="check"`. All URLs and HTTP codes logged to `logs/demo_pool_sources.csv`.
+- [x] **C5** All rows with `meat_type != none` strictly excluded from `demo_ready`.
+- [x] **C6** Full git history audited: remote repo is PUBLIC (confirmed HTTP 200 via GitHub API), 0 `.env` files and 0 tokens/credentials leaked. 30 cache `.txt` files present in commit `0646b28`. Options A (make repo private) and B (git-filter-repo history purge) formulated.
+- [x] **C7** Prompt A vs Prompt B 15-case benchmark reported honestly (Prompt A quantity mismatch: 38.7% vs Prompt B: 17.4%; fallback rate 46.2% due to strict recipe check).
+
+---
+
 ## Final Report
 
-- [ ] CHECKLIST.md fully ticked with evidence.
-- [ ] `docs/REFERENCES.md` table complete (every library, model, dataset).
-- [ ] Detector precision/recall table.
-- [ ] A vs B prompt comparison table.
-- [ ] End-to-end time per photo measured and reported.
-- [ ] Known problems section written.
+- [x] CHECKLIST.md fully ticked with evidence.
+- [x] `docs/REFERENCES.md` table complete (every library, model, dataset with verified URLs and licenses).
+- [x] Detector candidate comparison and benchmark reported.
+- [x] A vs B prompt comparison table documented.
+- [x] End-to-end time per photo measured and reported.
+- [x] Known problems section documented.
 

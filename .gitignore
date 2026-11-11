@@ -5,6 +5,7 @@ __pycache__/
 *.pyo
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/maharashtra_drafts.csv
 data/processed/*
 !data/processed/.gitkeep
 outputs/*
