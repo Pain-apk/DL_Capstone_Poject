@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantry to Plate — Indian Recipe Assistant</title>
+  <style>
+    :root {
+      --primary: #ea580c;
+      --primary-hover: #c2410c;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 900px; margin: 0 auto; line-height: 1.5; }
+    header { text-align: center; margin-bottom: 24px; padding: 16px 0; }
+    header h1 { font-size: 1.8rem; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card h2 { font-size: 1.2rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: #1e293b; }
+    
+    /* Upload Section */
+    .upload-zone { border: 2px dashed #cbd5e1; border-radius: var(--radius); padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #fafafa; }
+    .upload-zone:hover { border-color: var(--primary); background: #fff7ed; }
+    .upload-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+    .btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #e2e8f0; color: #334155; }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .preview-img { max-width: 260px; max-height: 200px; border-radius: 8px; margin: 12px auto 0; display: block; object-fit: cover; }
+    
+    /* Chips & Inputs */
+    .chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-height: 36px; }
+    .chip { background: #ffedd5; color: #9a3412; padding: 6px 12px; border-radius: 20px; font-size: 0.88rem; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #fed7aa; }
+    .chip .close { cursor: pointer; font-weight: bold; font-size: 1rem; color: #c2410c; }
+    .chip .close:hover { color: #7c2d12; }
+    .input-row { display: flex; gap: 8px; margin-top: 8px; }
+    .input-row input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
+    
+    /* Pantry Ticks */
+    .pantry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; margin-top: 10px; font-size: 0.88rem; }
+    .pantry-grid label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    
+    /* Preferences */
+    .pref-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
+    .pref-item label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px; }
+    .pref-item select, .pref-item input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: white; font-size: 0.9rem; }
+    .veg-checkbox { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-weight: 600; color: #15803d; cursor: pointer; }
+    
+    /* Candidates Top 5 */
+    .candidates-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .candidate-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.2s; position: relative; background: white; }
+    .candidate-card:hover { border-color: var(--primary); transform: translateY(-1px); }
+    .candidate-card.active { border-color: var(--primary); background: #fff7ed; box-shadow: 0 0 0 2px var(--primary); }
+    .cand-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 6px; }
+    .cand-title { font-size: 1.05rem; font-weight: 700; color: #1e293b; }
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .badge-score { background: #dbeafe; color: #1e40af; }
+    .badge-match { background: #dcfce7; color: #166534; }
+    .badge-protein { background: #fef3c7; color: #92400e; }
+    .badge-state { background: #f1f5f9; color: #475569; }
+    .cand-why { font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; }
+    .cand-missing { font-size: 0.85rem; color: #b91c1c; margin-top: 4px; font-weight: 500; }
+    
+    /* Recipe Display */
+    .recipe-card { border-left: 4px solid var(--primary); }
+    .recipe-banner { padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.9rem; font-weight: 500; }
+    .banner-llm { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .banner-fallback { background: #fefce8; color: #854d0e; border: 1px solid #fef08a; }
+    .recipe-meta { display: flex; gap: 16px; margin-bottom: 16px; font-size: 0.9rem; color: var(--text-muted); flex-wrap: wrap; }
+    .recipe-section { margin-bottom: 16px; }
+    .recipe-section h3 { font-size: 1rem; color: #334155; margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
+    .recipe-section ul, .recipe-section ol { padding-left: 20px; }
+    .recipe-section li { margin-bottom: 6px; font-size: 0.93rem; }
+    .missing-box { background: #fef2f2; border: 1px solid #fecaca; padding: 10px 14px; border-radius: 8px; color: #991b1b; font-size: 0.88rem; margin-bottom: 14px; }
+    
+    /* Collapsibles */
+    details { margin-top: 14px; padding: 8px 12px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border); font-size: 0.88rem; }
+    details summary { cursor: pointer; font-weight: 600; color: #475569; }
+    details pre { margin-top: 8px; white-space: pre-wrap; font-family: monospace; font-size: 0.82rem; background: #0f172a; color: #f8fafc; padding: 10px; border-radius: 6px; overflow-x: auto; }
+    
+    /* Notifications */
+    .alert { padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 0.9rem; }
+    .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🍽️ Pantry to Plate</h1>
+    <p>Indian Regional Recipe Assistant (Maharashtra & Neighboring States)</p>
+  </header>
+
+  <div id="alertBox" class="alert alert-danger" style="display: none;"></div>
+
+  <!-- 1. Photo Upload / Camera -->
+  <div class="card">
+    <h2>📸 1. Input Ingredients from Photo</h2>
+    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+      <p id="uploadPrompt">Tap to browse photo or use phone camera</p>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" style="display: none;" onchange="handleFileSelect(event)">
+      <img id="imagePreview" class="preview-img" style="display: none;">
+    </div>
+    <div class="upload-buttons">
+      <button class="btn" onclick="document.getElementById('fileInput').click()">📁 Select Photo</button>
+      <button class="btn btn-secondary" onclick="triggerDetect()" id="detectBtn">⚡ Detect Ingredients</button>
+      <button class="btn btn-secondary" onclick="useMockDetector()">🧪 Use Demo Ingredients</button>
+    </div>
+  </div>
+
+  <!-- 2. Detected & Confirmed Ingredients -->
+  <div class="card">
+    <h2>🥕 2. Detected & Confirmed Ingredients</h2>
+    <div class="chips-container" id="chipsBox">
+      <!-- Chips added dynamically -->
+    </div>
+    <div class="input-row">
+      <input type="text" id="addInput" placeholder="Add ingredient (e.g. onion, potato, paneer)..." onkeydown="if(event.key==='Enter') addIngredient()">
+      <button class="btn" onclick="addIngredient()">+ Add</button>
+    </div>
+
+    <div style="margin-top: 16px;">
+      <label style="font-weight: 600; font-size: 0.9rem; color: #475569;">Staples & Kitchen Basics (Assumed Available):</label>
+      <div class="pantry-grid" id="pantryGrid">
+        <!-- Checkboxes generated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Regional Preferences -->
+  <div class="card">
+    <h2>⚙️ 3. Preferences & Constraints</h2>
+    <div class="pref-grid">
+      <div class="pref-item">
+        <label>Regional Cuisine</label>
+        <select id="stateSelect"></select>
+      </div>
+      <div class="pref-item">
+        <label>Protein Target</label>
+        <select id="proteinSelect">
+          <option value="off">Standard (Off)</option>
+          <option value="on">Boosted (On)</option>
+          <option value="high">High Protein (>25g)</option>
+        </select>
+      </div>
+      <div class="pref-item">
+        <label>Max Time</label>
+        <select id="timeSelect">
+          <option value="0">Any Duration</option>
+          <option value="20">Under 20 mins</option>
+          <option value="30" selected>Under 30 mins</option>
+          <option value="45">Under 45 mins</option>
+          <option value="60">Under 60 mins</option>
+        </select>
+      </div>
+      <div class="pref-item">
+        <label>Servings</label>
+        <input type="number" id="servingsInput" value="2" min="1" max="10">
+      </div>
+      <div class="pref-item">
+        <label>Avoid Allergens</label>
+        <input type="text" id="allergenInput" placeholder="e.g. peanuts, dairy">
+      </div>
+    </div>
+    <label class="veg-checkbox">
+      <input type="checkbox" id="vegOnlyCheck">
+      🌱 Pure Vegetarian Only (Strictly exclude meat/egg)
+    </label>
+    <div style="margin-top: 18px; text-align: center;">
+      <button class="btn" style="padding: 12px 28px; font-size: 1.05rem;" onclick="findDishes()" id="findBtn">🔍 Find Dishes & Decide</button>
+    </div>
+  </div>
+
+  <!-- 4. Ranked Top 5 Candidates -->
+  <div class="card" id="candidatesSection" style="display: none;">
+    <h2>🏆 4. Top Recommended Dishes (Deterministic Scorer)</h2>
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">The top dish is automatically selected. Tap any dish to generate its recipe.</p>
+    <div class="candidates-list" id="candidatesList"></div>
+  </div>
+
+  <!-- 5. Generated Recipe -->
+  <div class="card recipe-card" id="recipeSection" style="display: none;">
+    <div id="recipeBanner" class="recipe-banner"></div>
+    <h2 id="recipeTitle" style="font-size: 1.4rem; color: var(--primary);"></h2>
+    <div class="recipe-meta" id="recipeMeta"></div>
+
+    <div id="missingSection" class="missing-box" style="display: none;"></div>
+
+    <div class="recipe-section">
+      <h3>Required Ingredients (Scaled to Servings):</h3>
+      <ul id="recipeIngredients"></ul>
+    </div>
+
+    <div class="recipe-section">
+      <h3>Cooking Steps:</h3>
+      <ol id="recipeSteps"></ol>
+    </div>
+
+    <!-- Reference toggle & Debug expander -->
+    <details id="refDetails">
+      <summary>📖 Show Reference Stored Recipe facts</summary>
+      <div id="refContent" style="padding-top: 10px;"></div>
+    </details>
+
+    <details id="debugDetails" style="display: none;">
+      <summary>🛠️ Show what the model was told (Prompt Header)</summary>
+      <pre id="debugContent"></pre>
+    </details>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let selectedImageFile = null;
+    let confirmedIngredients = ["onion", "potato", "green chilli", "coriander leaves"];
+    let currentTopCandidates = [];
+    let selectedCandidate = null;
+
+    const DEFAULT_PANTRY = ["oil", "salt", "water", "turmeric", "mustard seeds", "cumin seeds", "peanuts", "lemon"];
+
+    // Initialize UI
+    window.addEventListener("DOMContentLoaded", async () => {
+      renderChips();
+      renderPantryCheckboxes();
+      await loadConfig();
+    });
+
+    async function loadConfig() {
+      try {
+        const res = await fetch(`${API_BASE}/config`);
+        const cfg = await res.json();
+        const stateSel = document.getElementById("stateSelect");
+        stateSel.innerHTML = "";
+        cfg.states.forEach(st => {
+          const opt = document.createElement("option");
+          opt.value = st;
+          opt.textContent = st;
+          if (st === "Maharashtra") opt.selected = true;
+          stateSel.appendChild(opt);
+        });
+      } catch (e) {
+        console.warn("Config fetch error:", e);
+      }
+    }
+
+    function renderPantryCheckboxes() {
+      const grid = document.getElementById("pantryGrid");
+      grid.innerHTML = "";
+      DEFAULT_PANTRY.forEach(item => {
+        const lbl = document.createElement("label");
+        lbl.innerHTML = `<input type="checkbox" value="${item}" checked> ${item}`;
+        grid.appendChild(lbl);
+      });
+    }
+
+    function renderChips() {
+      const box = document.getElementById("chipsBox");
+      box.innerHTML = "";
+      if (confirmedIngredients.length === 0) {
+        box.innerHTML = `<span style="color: #94a3b8; font-size: 0.88rem;">No ingredients added yet. Upload a photo or type below.</span>`;
+        return;
+      }
+      confirmedIngredients.forEach((ing, idx) => {
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        chip.innerHTML = `${ing} <span class="close" onclick="removeIngredient(${idx})">&times;</span>`;
+        box.appendChild(chip);
+      });
+    }
+
+    function addIngredient() {
+      const inp = document.getElementById("addInput");
+      const val = inp.value.trim().toLowerCase();
+      if (val && !confirmedIngredients.includes(val)) {
+        confirmedIngredients.push(val);
+        renderChips();
+      }
+      inp.value = "";
+    }
+
+    function removeIngredient(idx) {
+      confirmedIngredients.splice(idx, 1);
+      renderChips();
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      selectedImageFile = file;
+      const preview = document.getElementById("imagePreview");
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+      document.getElementById("uploadPrompt").textContent = `Selected: ${file.name}`;
+    }
+
+    async function triggerDetect() {
+      if (!selectedImageFile) {
+        showAlert("Please select an image file first.");
+        return;
+      }
+      const btn = document.getElementById("detectBtn");
+      btn.innerHTML = `<span class="spinner"></span> Detecting...`;
+      btn.disabled = true;
+
+      const fd = new FormData();
+      fd.append("image", selectedImageFile);
+
+      try {
+        const res = await fetch(`${API_BASE}/detect`, { method: "POST", body: fd });
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        const detected = (data.ingredients || []).map(i => i.canonical || i.name);
+        if (detected.length > 0) {
+          detected.forEach(d => {
+            if (!confirmedIngredients.includes(d)) confirmedIngredients.push(d);
+          });
+          renderChips();
+          showAlert(`Successfully detected: ${detected.join(", ")}`, false);
+        } else {
+          showAlert("No ingredients detected with high confidence. You can add them manually.");
+        }
+      } catch (err) {
+        showAlert(`Detection error: ${err.message}`);
+      } finally {
+        btn.innerHTML = "⚡ Detect Ingredients";
+        btn.disabled = false;
+      }
+    }
+
+    function useMockDetector() {
+      const demo = ["poha", "onion", "peanuts", "green chilli", "mustard seeds", "turmeric"];
+      demo.forEach(d => {
+        if (!confirmedIngredients.includes(d)) confirmedIngredients.push(d);
+      });
+      renderChips();
+      showAlert("Demo breakfast ingredients loaded: poha, onion, peanuts, green chilli, mustard seeds, turmeric.", false);
+    }
+
+    function getSelectedPantry() {
+      const checked = [];
+      document.querySelectorAll("#pantryGrid input[type=checkbox]:checked").forEach(cb => {
+        checked.push(cb.value);
+      });
+      return checked;
+    }
+
+    async function findDishes() {
+      if (confirmedIngredients.length === 0) {
+        showAlert("Please have at least 1 ingredient in the list.");
+        return;
+      }
+      const btn = document.getElementById("findBtn");
+      btn.innerHTML = `<span class="spinner"></span> Scoring Dishes...`;
+      btn.disabled = true;
+
+      const allergensRaw = document.getElementById("allergenInput").value;
+      const allergens = allergensRaw.split(",").map(a => a.trim().toLowerCase()).filter(Boolean);
+
+      const payload = {
+        ingredients: confirmedIngredients,
+        pantry: getSelectedPantry(),
+        state: document.getElementById("stateSelect").value,
+        protein_focus: document.getElementById("proteinSelect").value,
+        max_time: parseInt(document.getElementById("timeSelect").value) || 0,
+        servings: parseInt(document.getElementById("servingsInput").value) || 2,
+        vegetarian_only: document.getElementById("vegOnlyCheck").checked,
+        excluded_allergens: allergens
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/dishes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        currentTopCandidates = data.top || [];
+        renderCandidates(currentTopCandidates);
+
+        if (currentTopCandidates.length > 0) {
+          selectCandidate(0);
+        } else {
+          document.getElementById("recipeSection").style.display = "none";
+          showAlert("No dishes matched all constraints. Try unchecking Vegetarian Only or increasing Max Time.");
+        }
+      } catch (err) {
+        showAlert(`Error scoring dishes: ${err.message}`);
+      } finally {
+        btn.innerHTML = "🔍 Find Dishes & Decide";
+        btn.disabled = false;
+      }
+    }
+
+    function renderCandidates(candidates) {
+      const sec = document.getElementById("candidatesSection");
+      const list = document.getElementById("candidatesList");
+      list.innerHTML = "";
+
+      if (candidates.length === 0) {
+        sec.style.display = "none";
+        return;
+      }
+
+      candidates.forEach((cand, idx) => {
+        const card = document.createElement("div");
+        card.className = "candidate-card" + (idx === 0 ? " active" : "");
+        card.id = `cand-${idx}`;
+        card.onclick = () => selectCandidate(idx);
+
+        const matchPct = Math.round(cand.ingredient_match * 100);
+        const scorePct = Math.round(cand.score * 100);
+        const missingStr = cand.missing_mains && cand.missing_mains.length > 0
+          ? `Missing: ${cand.missing_mains.join(", ")}`
+          : "All main ingredients matched!";
+
+        card.innerHTML = `
+          <div class="cand-header">
+            <span class="cand-title">#${idx + 1} ${cand.dish_name}</span>
+            <div class="badges">
+              <span class="badge badge-score">Score: ${scorePct}</span>
+              <span class="badge badge-match">${matchPct}% Match</span>
+              <span class="badge badge-protein">${cand.protein_estimate_g}g Protein</span>
+              <span class="badge badge-state">${cand.state}</span>
+            </div>
+          </div>
+          <div class="cand-why">${cand.why || ""}</div>
+          <div class="cand-missing" style="color: ${cand.missing_mains && cand.missing_mains.length > 0 ? '#b91c1c' : '#15803d'}">
+            ${missingStr}
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      sec.style.display = "block";
+    }
+
+    async function selectCandidate(idx) {
+      document.querySelectorAll(".candidate-card").forEach((c, i) => {
+        c.classList.toggle("active", i === idx);
+      });
+
+      selectedCandidate = currentTopCandidates[idx];
+      if (!selectedCandidate) return;
+
+      await generateRecipeForSelected(selectedCandidate);
+    }
+
+    async function generateRecipeForSelected(cand) {
+      const sec = document.getElementById("recipeSection");
+      sec.style.display = "block";
+      sec.scrollIntoView({ behavior: "smooth" });
+
+      const banner = document.getElementById("recipeBanner");
+      banner.className = "recipe-banner banner-fallback";
+      banner.innerHTML = `<span class="spinner" style="border-top-color: #854d0e;"></span> Generating recipe with Edge LLM for <strong>${cand.dish_name}</strong>...`;
+
+      document.getElementById("recipeTitle").textContent = cand.dish_name;
+      document.getElementById("recipeMeta").innerHTML = "";
+      document.getElementById("recipeIngredients").innerHTML = "";
+      document.getElementById("recipeSteps").innerHTML = "";
+
+      const allergensRaw = document.getElementById("allergenInput").value;
+      const allergens = allergensRaw.split(",").map(a => a.trim().toLowerCase()).filter(Boolean);
+
+      const payload = {
+        dish_id: cand.dish_id,
+        dish: cand,
+        ingredients: confirmedIngredients,
+        pantry: getSelectedPantry(),
+        state: cand.state,
+        allergens: allergens,
+        servings: parseInt(document.getElementById("servingsInput").value) || 2,
+        max_time: parseInt(document.getElementById("timeSelect").value) || 0,
+        debug: true
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/recipe/generate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        renderRecipe(data);
+      } catch (err) {
+        banner.className = "recipe-banner banner-fallback";
+        banner.innerHTML = `⚠️ Generation failed: ${err.message}. Fetching stored reference...`;
+        loadReferenceRecipe(cand.dish_id);
+      }
+    }
+
+    function renderRecipe(data) {
+      const banner = document.getElementById("recipeBanner");
+      const recipe = data.recipe || {};
+
+      if (data.source === "llm") {
+        banner.className = "recipe-banner banner-llm";
+        banner.innerHTML = `✍️ <strong>Written by the AI from your ingredients</strong> — check before cooking.`;
+      } else {
+        banner.className = "recipe-banner banner-fallback";
+        const reason = (data.failed_checks && data.failed_checks.length > 0)
+          ? `(Reason: ${data.failed_checks[0]})`
+          : "";
+        banner.innerHTML = `📖 <strong>Showing the stored reference recipe</strong> (AI version failed checks) ${reason}`;
+      }
+
+      document.getElementById("recipeTitle").textContent = `${recipe.dish_name || 'Recipe'} ${recipe.local_name ? '(' + recipe.local_name + ')' : ''}`;
+
+      const meta = document.getElementById("recipeMeta");
+      meta.innerHTML = `
+        <span>⏱️ ${recipe.time_minutes || 30} mins</span>
+        <span>🍽️ ${document.getElementById("servingsInput").value} servings</span>
+        <span>💪 ~${data.protein_estimate_g || 0}g protein</span>
+        <span>🏷️ Source: ${data.source.toUpperCase()}</span>
+      `;
+
+      // Missing ingredients box
+      const missingBox = document.getElementById("missingSection");
+      if (recipe.missing_ingredients && recipe.missing_ingredients.length > 0) {
+        missingBox.style.display = "block";
+        missingBox.innerHTML = `<strong>⚠️ Missing from your pantry:</strong> ${recipe.missing_ingredients.join(", ")}`;
+      } else {
+        missingBox.style.display = "none";
+      }
+
+      // Ingredients list
+      const ingList = document.getElementById("recipeIngredients");
+      ingList.innerHTML = "";
+      (recipe.ingredients || []).forEach(ing => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${ing.item}</strong>: ${ing.quantity}`;
+        ingList.appendChild(li);
+      });
+
+      // Steps list
+      const stepList = document.getElementById("recipeSteps");
+      stepList.innerHTML = "";
+      (recipe.steps || []).forEach(st => {
+        const li = document.createElement("li");
+        li.textContent = st;
+        stepList.appendChild(li);
+      });
+
+      // Debug expander
+      const debugDetails = document.getElementById("debugDetails");
+      if (data.prompt_header) {
+        debugDetails.style.display = "block";
+        document.getElementById("debugContent").textContent = data.prompt_header;
+      } else {
+        debugDetails.style.display = "none";
+      }
+
+      // Load reference content
+      loadReferenceRecipe(selectedCandidate.dish_id);
+    }
+
+    async function loadReferenceRecipe(dishId) {
+      const refBox = document.getElementById("refContent");
+      try {
+        const res = await fetch(`${API_BASE}/recipe/${dishId}`);
+        if (!res.ok) return;
+        const ref = await res.json();
+        let html = `<p><strong>Original Servings:</strong> ${ref.servings} | <strong>Cook Time:</strong> ${ref.time_minutes} mins</p>`;
+        html += `<p><strong>Base Ingredients:</strong></p><ul>`;
+        (ref.ingredients_with_quantity || []).forEach(i => {
+          html += `<li>${i.item}: ${i.qty}</li>`;
+        });
+        html += `</ul><p style="margin-top:8px;"><strong>Base Steps:</strong></p><ol>`;
+        (ref.steps || []).forEach(s => {
+          html += `<li>${s}</li>`;
+        });
+        html += `</ol>`;
+        refBox.innerHTML = html;
+      } catch (e) {
+        refBox.innerHTML = `<p style="color: #94a3b8;">Reference recipe not available.</p>`;
+      }
+    }
+
+    function showAlert(msg, isError = true) {
+      const box = document.getElementById("alertBox");
+      box.className = `alert ${isError ? 'alert-danger' : 'alert-success'}`;
+      box.style.background = isError ? '#fee2e2' : '#f0fdf4';
+      box.style.color = isError ? '#991b1b' : '#166534';
+      box.style.border = `1px solid ${isError ? '#fecaca' : '#bbf7d0'}`;
+      box.textContent = msg;
+      box.style.display = "block";
+      setTimeout(() => { box.style.display = "none"; }, 6000);
+    }
+  </script>
+</body>
+</html>
+

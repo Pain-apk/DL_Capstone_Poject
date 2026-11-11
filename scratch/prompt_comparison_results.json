@@ -1,0 +1,22 @@
+{
+  "A": {
+    "json_validity_pct": 100.0,
+    "dish_match_pct": 100.0,
+    "fallback_rate_pct": 23.076923076923077,
+    "meat_safety_pass_pct": 100.0,
+    "avg_step_overlap_pct": 51.941391941391934,
+    "avg_qty_mismatch_pct": 38.692307692307686,
+    "avg_seconds": 55.66527889325069,
+    "allergen_violations": 0
+  },
+  "B": {
+    "json_validity_pct": 100.0,
+    "dish_match_pct": 100.0,
+    "fallback_rate_pct": 46.15384615384615,
+    "meat_safety_pass_pct": 100.0,
+    "avg_step_overlap_pct": 56.318681318681314,
+    "avg_qty_mismatch_pct": 17.43846153846154,
+    "avg_seconds": 58.08659212405865,
+    "allergen_violations": 0
+  }
+}

@@ -12,6 +12,7 @@ outputs/*
 data/cache/*
 !data/cache/.gitkeep
 *.gguf
+*.pt
 *.bin
 *.safetensors
 .cache/

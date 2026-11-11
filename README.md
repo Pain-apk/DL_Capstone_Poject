@@ -114,3 +114,29 @@ python -m venv venv
 - Output parsed with strict JSON schema compliance (`dish_name`, `local_name`, `ingredients`, `steps`, `time_minutes`, `missing_ingredients`).
 - Candidate constraint satisfied: Generated target dish from provided candidate list.
 
+---
+
+## End-to-End Demo Web Application & Edge Pipeline (Phases 0-9)
+
+### Running the Local Web Server
+```powershell
+# 1. Switch to project root
+cd C:\Users\ACER\Desktop\Dev\DL_Project\DL_Capstone_Poject
+
+# 2. Run integration tests (9 passed)
+.\venv\Scripts\python.exe -m unittest tests.test_integration -v
+
+# 3. Start FastAPI Server
+.\venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+Open your browser at `http://127.0.0.1:8000` to access the responsive web UI.
+
+### Key Metrics
+- **Detector + LLM Combined Peak VRAM:** 1.212 GB (< 7.0 GB ceiling, **PASSED**)
+- **JSON Validity Rate:** 100.0%
+- **Dish Match Rate:** 100.0%
+- **Allergen Violation Rate:** 0.0% (across 20 randomized tests)
+- **Prompt B Quantity Mismatch Rate:** 17.4% (vs 38.7% for Prompt A)
+- **Jetson Edge Documentation:** Available in `docs/JETSON_NOTES.md` (TensorRT export, llama.cpp GGUF conversion, Dockerfile).
+
+

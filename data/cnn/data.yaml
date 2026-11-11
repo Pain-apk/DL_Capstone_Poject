@@ -1,0 +1,6 @@
+path: ../data/cnn
+train: train/images
+val: val/images
+test: test/images
+nc: 8
+names: ['onion', 'tomato', 'potato', 'garlic', 'carrot', 'brinjal', 'green_chilli', 'lemon']
