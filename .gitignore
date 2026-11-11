@@ -16,4 +16,7 @@ data/cache/*
 *.safetensors
 .cache/
 wandb/
+.env
+data/cnn/raw/
+app/__pycache__/
 

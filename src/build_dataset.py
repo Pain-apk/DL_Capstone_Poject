@@ -43,25 +43,77 @@ def assert_safe_path(filepath: str):
 
 def parse_ingredients_json(ings_with_qty_str: str) -> List[Dict[str, str]]:
     """
-    Parses '1.5 cup poha|1 medium onion|salt to taste' into
-    [{"item": "poha", "quantity": "1.5 cup"}, {"item": "onion", "quantity": "1 medium"}, ...]
+    Parses '1.5 cup poha|1 medium onion|8 curry leaves|salt to taste' into
+    [{"item": "poha", "quantity": "1.5 cup"}, {"item": "onion", "quantity": "1 medium"},
+     {"item": "curry leaves", "quantity": "8"}, ...]
+
+    Parsing rule:
+    - A quantity ends at the last unit token (tsp, tbsp, cup, g, kg, ml, l,
+      medium, large, small, pinch, bunch, clove, piece, pieces) or at the
+      first number if no unit token follows.
+    - Everything after the quantity section is the item name (may be multi-word).
     """
+    # Tokens that act as units of measure (not part of the item name).
+    UNIT_TOKENS = {
+        "tsp", "tbsp", "teaspoon", "teaspoons", "tablespoon", "tablespoons",
+        "cup", "cups", "g", "kg", "ml", "l", "oz", "lb", "lbs",
+        "medium", "large", "small", "pinch", "bunch", "clove", "cloves",
+        "piece", "pieces", "slice", "slices",
+    }
+
+    def _split_qty_item(text: str) -> Tuple[str, str]:
+        """
+        Split a single ingredient string into (quantity, item).
+        Strategy: scan tokens left-to-right; quantity = leading number +
+        all immediately-following unit tokens; item = remainder.
+        """
+        tokens = text.split()
+        if not tokens:
+            return ("1 portion", text)
+
+        # Must start with a numeric token (int, float, or fraction like 1/2)
+        num_re = re.compile(r"^\d+([./]\d+)?$")
+        if not num_re.match(tokens[0]):
+            # No leading number → whole string is the item
+            return ("to taste" if "to taste" in text.lower() else "1 portion", text)
+
+        qty_tokens = [tokens[0]]
+        rest = tokens[1:]
+
+        # Greedily consume unit tokens
+        for tok in rest:
+            if tok.lower() in UNIT_TOKENS:
+                qty_tokens.append(tok)
+            else:
+                break
+
+        item_start = len(qty_tokens)
+        item_tokens = tokens[item_start:]
+        qty_str = " ".join(qty_tokens)
+        item_str = " ".join(item_tokens).strip()
+
+        if not item_str:
+            # Edge case: just a number with a unit and nothing else
+            if len(qty_tokens) > 1:
+                # e.g. "2 clove" with no item → item = last unit token
+                item_str = qty_tokens[-1]
+                qty_str = " ".join(qty_tokens[:-1])
+            else:
+                item_str = "ingredient"
+
+        return (qty_str, item_str)
+
     items = []
     for line in ings_with_qty_str.split("|"):
         line = line.strip()
         if not line:
             continue
-        m = re.match(r"^(\d+\s+\d+/\d+|\d+/\d+|\d+\.\d+|\d+)\s*([a-zA-Z]+)?\s*(.*)$", line)
-        if m:
-            qty_num, unit, name = m.groups()
-            qty_str = f"{qty_num} {unit}".strip() if unit else qty_num
-            item_name = name.strip() if name else unit or "ingredient"
-            items.append({"item": item_name, "quantity": qty_str})
-        elif "to taste" in line.lower():
-            name = line.lower().replace("to taste", "").strip()
-            items.append({"item": name, "quantity": "to taste"})
+        if "to taste" in line.lower():
+            name = re.sub(r"\bto taste\b", "", line, flags=re.IGNORECASE).strip()
+            items.append({"item": name if name else "salt", "quantity": "to taste"})
         else:
-            items.append({"item": line, "quantity": "1 portion"})
+            qty, item = _split_qty_item(line)
+            items.append({"item": item, "quantity": qty})
     return items
 
 def generate_prompt_variants(dish_row: Dict[str, Any],
