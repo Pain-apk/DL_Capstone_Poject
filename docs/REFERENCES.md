@@ -47,7 +47,7 @@
 | 13 | Datasets | 5.1.0 | https://huggingface.co/docs/datasets | Apache 2.0 | 2026-11-07 | 200 (download) | JSONL dataset manipulation |
 | 14 | Accelerate | 1.15.0 | https://huggingface.co/docs/accelerate | Apache 2.0 | 2026-11-07 | 200 (download) | Training acceleration utility |
 | 15 | TRL | 1.17.1 | https://huggingface.co/docs/trl | Apache 2.0 | 2026-11-07 | 200 (download) | SFTTrainer for QLoRA fine-tuning |
-| 16 | SnapStock Produce Detector (`fruit_vegetable_yolov8m.pt`) | YOLOv8m (49.68 MB) | https://huggingface.co/Senu-12/snapstock-fruit-vegetable-detector | Apache 2.0 | 2026-11-12 | 200 (download) | Pretrained produce detector covering target vegetable classes |
+| 16 | SnapStock Produce Detector (`fruit_vegetable_yolov8m.pt`) / `best.pt` | YOLOv8m (52,089,985 B / 49.68 MB) | https://huggingface.co/Senu-12/snapstock-fruit-vegetable-detector | other (Upstream repo license: "MIT License" by Henning Heyen) | 2026-11-12 | 200 (download) | Pretrained produce detector; identical SHA256: `a18624d4...` |
 | 17 | Test Image: Onion (`File:Onions.jpg`) | 130 KB | https://upload.wikimedia.org/wikipedia/commons/1/1b/Onions.jpg | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
 | 18 | Test Image: Tomato (`File:Tomato_je.jpg`) | 232 KB | https://upload.wikimedia.org/wikipedia/commons/8/89/Tomato_je.jpg | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
 | 19 | Test Image: Potato (`File:Patates.jpg`) | 1195 KB | https://upload.wikimedia.org/wikipedia/commons/a/ab/Patates.jpg | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
@@ -58,4 +58,7 @@
 | 24 | Test Image: Lemon (`File:Lemon.jpg`) | 279 KB | https://upload.wikimedia.org/wikipedia/commons/e/e4/Lemon.jpg | CC BY-SA 2.5 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
 | 25 | Test Image: Veggies Combo (`File:Veggies.jpg`) | 7861 KB | https://upload.wikimedia.org/wikipedia/commons/3/31/Veggies.jpg | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
 | 26 | Test Image: Produce Combo (`File:Fresh_Vegetable_Produce_(Unsplash).jpg`) | 2221 KB | https://upload.wikimedia.org/wikipedia/commons/b/b0/Fresh_Vegetable_Produce_%28Unsplash%29.jpg | CC0 (Public Domain) | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 27 | Kitchen Fruit & Vegetable Benchmark Dataset | 120 images / 585 boxes / 14 classes (~383 MB) | https://huggingface.co/datasets/omorros/kitchen-fruit-vegetable-detection | CC BY 4.0 | 2026-11-12 | 200 (download) | Evaluation benchmark dataset for detector selection |
+| 28 | Test Image: User test photo (`tests/images/test1.jpg`) | 441.5 KB | UNKNOWN (local user photo) | UNKNOWN | 2026-11-12 | Local file | Baking ingredients test image for out-of-distribution evaluation |
+| 29 | Upstream Produce Dataset & Baseline Model Repo | Git repo (YOLOv8 baseline weights, 63 classes) | https://github.com/henningheyen/Fruits-And-Vegetables-Detection-Dataset | MIT License | 2026-11-12 | 200 (search/API) | Upstream repository source of `best.pt` baseline checkpoint by Henning Heyen |
 

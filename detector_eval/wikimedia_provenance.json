@@ -1,0 +1,92 @@
+[
+  {
+    "file": "onion_01.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Onions.jpg",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Onions.jpg",
+    "http_status": 200,
+    "author": "Fir0002",
+    "license": "GFDL 1.2",
+    "verified": true
+  },
+  {
+    "file": "tomato_01.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Tomato_je.jpg",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/8/89/Tomato_je.jpg",
+    "http_status": 200,
+    "author": "Softeis",
+    "license": "GFDL",
+    "verified": true
+  },
+  {
+    "file": "potato_01.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Patates.jpg",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Patates.jpg",
+    "http_status": 200,
+    "author": "Scott Bauer, USDA ARS",
+    "license": "Public domain",
+    "verified": true
+  },
+  {
+    "file": "garlic_01.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Garlic.jpg",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/2/22/Garlic.jpg",
+    "http_status": 200,
+    "author": "Donovan Govan.",
+    "license": "GFDL",
+    "verified": true
+  },
+  {
+    "file": "carrot_01.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Carrots_of_many_colors.jpg",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/3/32/Carrots_of_many_colors.jpg",
+    "http_status": 200,
+    "author": "Stephen Ausmus",
+    "license": "Public domain",
+    "verified": true
+  },
+  {
+    "file": "brinjal_01.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Egg_plant.JPG",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/8/89/Egg_plant.JPG",
+    "http_status": 200,
+    "author": "Miansari66",
+    "license": "CC0",
+    "verified": true
+  },
+  {
+    "file": "green_chilli_01.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Green_chili_peppers.jpg",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/3/39/Green_chili_peppers.jpg",
+    "http_status": 200,
+    "author": "Shalu Sharma",
+    "license": "CC BY 2.0",
+    "verified": true
+  },
+  {
+    "file": "lemon_01.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Lemon.jpg",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Lemon.jpg",
+    "http_status": 200,
+    "author": "Andr\u00e9 Karwath aka Aka",
+    "license": "CC BY-SA 2.5",
+    "verified": true
+  },
+  {
+    "file": "combo_veggies_01.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Veggies.jpg",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/3/31/Veggies.jpg",
+    "http_status": 200,
+    "author": "https://www.flickr.com/photos/calliope",
+    "license": "CC BY 2.0",
+    "verified": true
+  },
+  {
+    "file": "combo_produce_02.jpg",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Fresh_Vegetable_Produce_(Unsplash).jpg",
+    "upload_url": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Fresh_Vegetable_Produce_%28Unsplash%29.jpg",
+    "http_status": 200,
+    "author": "Sven Scheuermeier sveninho",
+    "license": "CC0",
+    "verified": true
+  }
+]

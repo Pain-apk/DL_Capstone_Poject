@@ -91,3 +91,32 @@ http://127.0.0.1:8000
 | **JSON Schema Adherence** | 100.0% valid JSON | Strict JSON | **PASSED** |
 | **Recipe Generation Source** | `source="llm"` (AI generated from prompt header) | Authentic AI output | **PASSED** |
 | **Allergen Safety Enforcement**| 0.0% allergen leaks across 20 randomized trials | Zero leaks | **PASSED** |
+
+---
+
+## Layer 1 — Detector Evaluation Benchmarks
+
+Evaluation performed on `omorros/kitchen-fruit-vegetable-detection` (120 images, 585 annotations, 40 simple / 40 medium / 40 hard tiers) and out-of-distribution test image `tests/images/test1.jpg`.
+
+### Commands Executed:
+```powershell
+# 1. Benchmark dataset intake & verification
+.\venv\Scripts\python.exe -c "import os, glob; ..."
+
+# 2. Candidate evaluation scripts
+.\venv\Scripts\python.exe -u detector_eval/run_eval.py --candidate best --weights data/cnn/best.pt --license "other"
+.\venv\Scripts\python.exe -u detector_eval/run_eval.py --candidate yoloworld --weights detector_eval/test_setup/yolov8s-worldv2.pt --license "AGPL-3.0"
+.\venv\Scripts\python.exe -u detector_eval/run_eval.py --candidate yoloe --weights detector_eval/models/yoloe-11s-seg.pt --license "AGPL-3.0"
+
+# 3. Master summary aggregation
+.\venv\Scripts\python.exe -c "import pandas as pd; pd.concat([pd.read_csv(f'detector_eval/results/summary_{c}.csv') for c in ['best','yoloworld','yoloe']]).to_csv('detector_eval/results/summary_all_candidates.csv', index=False)"
+```
+
+### Phase C — Safety & Archive Commands
+```powershell
+New-Item -ItemType Directory -Force -Path 'C:\Users\ACER\Desktop\project_archive_big'
+Move-Item -Path 'DL_Capstone_Poject\mobileclip_blt.ts' -Destination 'C:\Users\ACER\Desktop\project_archive_big\'
+Move-Item -Path 'DL_Capstone_Poject\weights\clip\ViT-B-32.pt' -Destination 'C:\Users\ACER\Desktop\project_archive_big\'
+```
+
+

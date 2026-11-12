@@ -1,0 +1,63 @@
+file_name,tier,fp_class,gt_classes,raw_all_categories,confusing_pairs_annotated,candidate,threshold
+IMG_004.jpg,simple,capsicum,"['onion', 'tomato']","['onion', 'tomato']",[],yoloe,0.25
+IMG_005.jpg,simple,lemon,[],"['grape', 'strawberry']",[],yoloe,0.25
+IMG_005.jpg,simple,tomato,[],"['grape', 'strawberry']",[],yoloe,0.25
+IMG_008.jpg,simple,tomato,['capsicum'],"['bell_pepper_red', 'banana', 'bell_pepper_green']",[],yoloe,0.25
+IMG_010.jpg,medium,tomato,[],"['strawberry', 'peach', 'banana', 'grape']",[],yoloe,0.25
+IMG_012.jpg,medium,tomato,"['potato', 'carrot', 'onion', 'capsicum']","['carrot', 'potato', 'potato', 'bell_pepper_red', 'onion']",['potato/onion'],yoloe,0.25
+IMG_013.jpg,medium,tomato,['lemon'],"['banana', 'lemon', 'peach', 'orange', 'apple']","['peach/orange', 'lemon/orange']",yoloe,0.25
+IMG_015.jpg,medium,tomato,['lemon'],"['grape', 'strawberry', 'apple', 'peach', 'lemon']",[],yoloe,0.25
+IMG_017.jpg,hard,tomato,['lemon'],"['apple', 'apple', 'orange', 'peach', 'banana', 'lemon', 'grape']","['peach/orange', 'lemon/orange']",yoloe,0.25
+IMG_020.jpg,hard,tomato,['lemon'],"['orange', 'orange', 'banana', 'strawberry', 'lemon', 'apple', 'peach', 'grape']","['peach/orange', 'lemon/orange']",yoloe,0.25
+IMG_022.jpg,hard,tomato,['lemon'],"['banana', 'peach', 'apple', 'orange', 'grape', 'strawberry', 'lemon']","['peach/orange', 'lemon/orange', 'tomato/apple']",yoloe,0.25
+IMG_023.jpg,hard,lemon,"['carrot', 'tomato', 'potato', 'onion', 'capsicum']","['bell_pepper_green', 'bell_pepper_red', 'onion', 'tomato', 'potato', 'onion', 'carrot']","['red pepper/tomato', 'potato/onion']",yoloe,0.25
+IMG_024.jpg,hard,tomato,['carrot'],"['peach', 'carrot', 'banana', 'strawberry', 'strawberry', 'apple', 'orange', 'grape']",['peach/orange'],yoloe,0.25
+IMG_035.jpg,medium,potato,"['capsicum', 'cucumber', 'onion', 'tomato']","['onion', 'tomato', 'cucumber', 'bell_pepper_green']",['cucumber/green pepper'],yoloe,0.25
+IMG_039.jpg,medium,lemon,"['potato', 'onion']","['onion', 'potato', 'apple', 'peach', 'grape']",['potato/onion'],yoloe,0.25
+IMG_039.jpg,medium,tomato,"['potato', 'onion']","['onion', 'potato', 'apple', 'peach', 'grape']",['potato/onion'],yoloe,0.25
+IMG_044.jpg,hard,lemon,['capsicum'],"['grape', 'strawberry', 'strawberry', 'bell_pepper_red', 'banana', 'peach', 'orange']",['peach/orange'],yoloe,0.25
+IMG_044.jpg,hard,tomato,['capsicum'],"['grape', 'strawberry', 'strawberry', 'bell_pepper_red', 'banana', 'peach', 'orange']",['peach/orange'],yoloe,0.25
+IMG_048.jpg,hard,tomato,"['potato', 'lemon']","['banana', 'peach', 'apple', 'potato', 'orange', 'lemon', 'strawberry', 'grape']",['peach/orange'],yoloe,0.25
+IMG_052.jpg,simple,lemon,['cucumber'],"['cucumber', 'grape', 'grape']",['cucumber/green pepper'],yoloe,0.25
+IMG_054.jpg,simple,tomato,[],"['grape', 'orange', 'strawberry']",[],yoloe,0.25
+IMG_064.jpg,medium,tomato,['lemon'],"['lemon', 'strawberry', 'strawberry', 'peach', 'grape']",[],yoloe,0.25
+IMG_071.jpg,hard,tomato,"['cucumber', 'capsicum', 'lemon']","['banana', 'peach', 'lemon', 'cucumber', 'orange', 'bell_pepper_red', 'strawberry', 'grape']","['peach/orange', 'lemon/orange']",yoloe,0.25
+IMG_075.jpg,simple,lemon,[],"['strawberry', 'grape']",[],yoloe,0.25
+IMG_075.jpg,simple,tomato,[],"['strawberry', 'grape']",[],yoloe,0.25
+IMG_083.jpg,medium,tomato,['carrot'],"['banana', 'strawberry', 'carrot', 'grape']",[],yoloe,0.25
+IMG_084.jpg,medium,tomato,"['potato', 'capsicum', 'carrot', 'onion']","['potato', 'potato', 'bell_pepper_red', 'carrot', 'onion']",['potato/onion'],yoloe,0.25
+IMG_085.jpg,medium,lemon,[],"['orange', 'orange', 'banana', 'peach', 'apple']",['peach/orange'],yoloe,0.25
+IMG_087.jpg,medium,tomato,['lemon'],"['apple', 'strawberry', 'lemon', 'peach', 'orange']","['peach/orange', 'lemon/orange']",yoloe,0.25
+IMG_088.jpg,medium,cucumber,"['potato', 'carrot', 'onion']","['onion', 'carrot', 'carrot', 'banana', 'potato']",['potato/onion'],yoloe,0.25
+IMG_095.jpg,hard,tomato,"['carrot', 'lemon']","['banana', 'orange', 'orange', 'peach', 'carrot', 'lemon', 'strawberry', 'grape']","['peach/orange', 'lemon/orange']",yoloe,0.25
+IMG_107.jpg,medium,capsicum,['carrot'],"['banana', 'grape', 'carrot', 'strawberry', 'strawberry']",[],yoloe,0.25
+IMG_111.jpg,medium,tomato,['lemon'],"['peach', 'banana', 'grape', 'strawberry', 'lemon']",[],yoloe,0.25
+IMG_112.jpg,medium,tomato,"['potato', 'carrot', 'capsicum']","['carrot', 'orange', 'potato', 'apple', 'bell_pepper_red']",[],yoloe,0.25
+IMG_115.jpg,hard,lemon,['tomato'],"['apple', 'peach', 'banana', 'tomato', 'orange', 'peach', 'grape']","['tomato/apple', 'peach/orange']",yoloe,0.25
+IMG_116.jpg,hard,tomato,"['lemon', 'carrot', 'cucumber', 'potato', 'onion', 'capsicum']","['lemon', 'onion', 'potato', 'potato', 'bell_pepper_red', 'bell_pepper_green', 'carrot', 'cucumber']","['potato/onion', 'cucumber/green pepper']",yoloe,0.25
+IMG_118.jpg,hard,lemon,"['potato', 'capsicum', 'onion', 'tomato']","['potato', 'bell_pepper_green', 'bell_pepper_red', 'apple', 'tomato', 'banana', 'onion', 'strawberry']","['tomato/apple', 'red pepper/tomato', 'potato/onion']",yoloe,0.25
+IMG_012.jpg,medium,tomato,"['potato', 'carrot', 'onion', 'capsicum']","['carrot', 'potato', 'potato', 'bell_pepper_red', 'onion']",['potato/onion'],yoloe,0.4
+IMG_015.jpg,medium,tomato,['lemon'],"['grape', 'strawberry', 'apple', 'peach', 'lemon']",[],yoloe,0.4
+IMG_044.jpg,hard,tomato,['capsicum'],"['grape', 'strawberry', 'strawberry', 'bell_pepper_red', 'banana', 'peach', 'orange']",['peach/orange'],yoloe,0.4
+IMG_048.jpg,hard,tomato,"['potato', 'lemon']","['banana', 'peach', 'apple', 'potato', 'orange', 'lemon', 'strawberry', 'grape']",['peach/orange'],yoloe,0.4
+IMG_071.jpg,hard,tomato,"['cucumber', 'capsicum', 'lemon']","['banana', 'peach', 'lemon', 'cucumber', 'orange', 'bell_pepper_red', 'strawberry', 'grape']","['peach/orange', 'lemon/orange']",yoloe,0.4
+IMG_084.jpg,medium,tomato,"['potato', 'capsicum', 'carrot', 'onion']","['potato', 'potato', 'bell_pepper_red', 'carrot', 'onion']",['potato/onion'],yoloe,0.4
+IMG_095.jpg,hard,tomato,"['carrot', 'lemon']","['banana', 'orange', 'orange', 'peach', 'carrot', 'lemon', 'strawberry', 'grape']","['peach/orange', 'lemon/orange']",yoloe,0.4
+IMG_111.jpg,medium,tomato,['lemon'],"['peach', 'banana', 'grape', 'strawberry', 'lemon']",[],yoloe,0.4
+IMG_112.jpg,medium,tomato,"['potato', 'carrot', 'capsicum']","['carrot', 'orange', 'potato', 'apple', 'bell_pepper_red']",[],yoloe,0.4
+IMG_115.jpg,hard,lemon,['tomato'],"['apple', 'peach', 'banana', 'tomato', 'orange', 'peach', 'grape']","['tomato/apple', 'peach/orange']",yoloe,0.4
+IMG_116.jpg,hard,tomato,"['lemon', 'carrot', 'cucumber', 'potato', 'onion', 'capsicum']","['lemon', 'onion', 'potato', 'potato', 'bell_pepper_red', 'bell_pepper_green', 'carrot', 'cucumber']","['potato/onion', 'cucumber/green pepper']",yoloe,0.4
+IMG_012.jpg,medium,tomato,"['potato', 'carrot', 'onion', 'capsicum']","['carrot', 'potato', 'potato', 'bell_pepper_red', 'onion']",['potato/onion'],yoloe,0.5
+IMG_015.jpg,medium,tomato,['lemon'],"['grape', 'strawberry', 'apple', 'peach', 'lemon']",[],yoloe,0.5
+IMG_044.jpg,hard,tomato,['capsicum'],"['grape', 'strawberry', 'strawberry', 'bell_pepper_red', 'banana', 'peach', 'orange']",['peach/orange'],yoloe,0.5
+IMG_048.jpg,hard,tomato,"['potato', 'lemon']","['banana', 'peach', 'apple', 'potato', 'orange', 'lemon', 'strawberry', 'grape']",['peach/orange'],yoloe,0.5
+IMG_071.jpg,hard,tomato,"['cucumber', 'capsicum', 'lemon']","['banana', 'peach', 'lemon', 'cucumber', 'orange', 'bell_pepper_red', 'strawberry', 'grape']","['peach/orange', 'lemon/orange']",yoloe,0.5
+IMG_084.jpg,medium,tomato,"['potato', 'capsicum', 'carrot', 'onion']","['potato', 'potato', 'bell_pepper_red', 'carrot', 'onion']",['potato/onion'],yoloe,0.5
+IMG_111.jpg,medium,tomato,['lemon'],"['peach', 'banana', 'grape', 'strawberry', 'lemon']",[],yoloe,0.5
+IMG_112.jpg,medium,tomato,"['potato', 'carrot', 'capsicum']","['carrot', 'orange', 'potato', 'apple', 'bell_pepper_red']",[],yoloe,0.5
+IMG_116.jpg,hard,tomato,"['lemon', 'carrot', 'cucumber', 'potato', 'onion', 'capsicum']","['lemon', 'onion', 'potato', 'potato', 'bell_pepper_red', 'bell_pepper_green', 'carrot', 'cucumber']","['potato/onion', 'cucumber/green pepper']",yoloe,0.5
+IMG_044.jpg,hard,tomato,['capsicum'],"['grape', 'strawberry', 'strawberry', 'bell_pepper_red', 'banana', 'peach', 'orange']",['peach/orange'],yoloe,0.6
+IMG_071.jpg,hard,tomato,"['cucumber', 'capsicum', 'lemon']","['banana', 'peach', 'lemon', 'cucumber', 'orange', 'bell_pepper_red', 'strawberry', 'grape']","['peach/orange', 'lemon/orange']",yoloe,0.6
+IMG_084.jpg,medium,tomato,"['potato', 'capsicum', 'carrot', 'onion']","['potato', 'potato', 'bell_pepper_red', 'carrot', 'onion']",['potato/onion'],yoloe,0.6
+IMG_112.jpg,medium,tomato,"['potato', 'carrot', 'capsicum']","['carrot', 'orange', 'potato', 'apple', 'bell_pepper_red']",[],yoloe,0.6
+IMG_116.jpg,hard,tomato,"['lemon', 'carrot', 'cucumber', 'potato', 'onion', 'capsicum']","['lemon', 'onion', 'potato', 'potato', 'bell_pepper_red', 'bell_pepper_green', 'carrot', 'cucumber']","['potato/onion', 'cucumber/green pepper']",yoloe,0.6

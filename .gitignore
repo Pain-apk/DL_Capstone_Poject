@@ -21,4 +21,6 @@ wandb/
 .env
 data/cnn/raw/
 app/__pycache__/
+tests/images/test1.jpg
+detector_eval/data/
 

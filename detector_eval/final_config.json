@@ -1,0 +1,31 @@
+{
+  "candidate": "Candidate A (best.pt)",
+  "weights": "data/cnn/best.pt",
+  "conf": 0.2,
+  "imgsz": 640,
+  "augment": false,
+  "device": "cuda:0",
+  "target_classes": [
+    "onion",
+    "tomato",
+    "potato",
+    "carrot",
+    "cucumber",
+    "lemon",
+    "capsicum"
+  ],
+  "class_map_additions": {
+    "zucchini/courgette": "cucumber"
+  },
+  "report_performance": {
+    "total_images": 60,
+    "TP": 109,
+    "FP": 5,
+    "FN": 36,
+    "micro_precision": 0.9561,
+    "micro_recall": 0.7517,
+    "micro_f1": 0.8417,
+    "fp_per_image": 0.0833,
+    "latency_ms": 130.41
+  }
+}
