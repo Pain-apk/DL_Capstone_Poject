@@ -433,6 +433,6 @@ def generate_recipe(req: RecipeGenerateRequest):
             "source": "stored",
             "recipe_status": "reviewed" if demo_ready == "yes" else "unreviewed",
             "validation": {"passed": False, "failures": [f"Generation exception: {str(e)}"]},
-            "warnings": ["Unexpected generation error; returned verified stored catalog recipe."]
+            "warnings": ["Unexpected generation error; returned stored catalog recipe (unreviewed)."]
         }
 

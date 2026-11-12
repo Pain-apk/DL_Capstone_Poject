@@ -361,7 +361,7 @@ class RecipeWriter:
                 "source": "stored",
                 "recipe_status": recipe_status,
                 "validation": {"passed": True, "failures": []},
-                "warnings": ["LLM_MODE is off: returning verified catalog recipe."]
+                "warnings": ["LLM_MODE is off: returning stored catalog recipe (unreviewed)."]
             }
 
         # Build decision header and validator constraints
@@ -506,5 +506,5 @@ class RecipeWriter:
             "source": "stored",
             "recipe_status": recipe_status,
             "validation": {"passed": False, "failures": validation_failures},
-            "warnings": ["LLM generation failed validation: returning verified catalog recipe."]
+            "warnings": ["LLM generation failed validation: returning stored catalog recipe (unreviewed)."]
         }
