@@ -192,3 +192,4 @@ Generates an authentic scaled recipe or retrieves the catalog recipe with strict
 ## Known limits
 - missing_ingredients uses simple name matching and can be wrong (e.g. "peanuts" vs "raw peanuts"); do not use it for a shopping list yet.
 - validation.passed describes the LLM attempt only. When source is "stored", the recipe is the stored one regardless of validation.
+
