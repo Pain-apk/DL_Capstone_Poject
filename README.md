@@ -1,216 +1,283 @@
-# Pantry to Plate — Indian Regional Recipe Assistant (2-Model Edge Architecture)
+# Pantry to Plate — Regional Recipe Assistant (2-Model Edge Backend)
 
-A streamlined 2-model pipeline designed for edge deployment (e.g. NVIDIA Jetson) and laptop GPUs (NVIDIA RTX 5050, 8 GB VRAM):
-1. **Model 1 (Produce/Ingredient Detector):** Ultralytics YOLOv8m Produce Detector covering 63 food and vegetable classes (onion, tomato, potato, carrot, garlic, green chilli, lemon, brinjal, capsicum, ginger, peas, etc.), processing photos directly in memory (<103 ms/image, EXIF stripped, 0 disk writes).
-2. **Deterministic Scorer & Decision Engine:** Ranks candidate regional dishes based on ingredient availability, regional proximity graph, diet restrictions (vegetarian hard filter), allergen exclusion, and cooking time. Generates the top-1 `[DECISION]` header.
-3. **Model 2 (Recipe Generator with Prompt Header):** 4-bit NF4 quantized `Qwen/Qwen2.5-1.5B-Instruct` + QLoRA adapter generating structured, authentic recipes in strict JSON schema directly from the code decision header.
+A production-grade, 2-model regional Indian recipe engine built for laptop GPUs (RTX 5050/4060/3060) and edge devices (NVIDIA Jetson). It converts produce photos into verified, authentic regional recipes through a 3-layer pipeline.
 
 ---
 
-## Clean Directory Structure
+## Architecture Overview
+
+```
+[ User Photo ]
+      │
+      ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Layer 1: In-Memory Produce Detector (Ultralytics YOLOv8m)   │
+│ - Endpoint: POST /detect                                    │
+│ - Latency: ~38 ms (GPU) / <103 ms (Jetson)                  │
+│ - Strips EXIF metadata, 0 disk writes, in-memory processing │
+└─────────────────────────────────────────────────────────────┘
+      │ Detected Ingredients: ["onion", "potato", ...]
+      ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Layer 2: Deterministic Dish Scorer (Regional Graph & Diet)   │
+│ - Endpoint: POST /dishes                                    │
+│ - Catalog: 395 authentic dishes across 7 Indian states      │
+│ - Proximity weighting (state_neighbours.csv), hard veg &   │
+│   allergen filters, 50% match eligibility threshold         │
+└─────────────────────────────────────────────────────────────┘
+      │ Candidate Dishes + Selected dish_id
+      ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Layer 3: Recipe Generator & Catalog Fallback Engine         │
+│ - Endpoint: POST /recipe/generate                           │
+│ - Scaling: Code calculates scaled quantities for servings   │
+│ - Step Generation: LLM writes plain text steps (Qwen 1.5B)  │
+│ - 5 Step Validators: word counts, unallowed ingredients,     │
+│   allergens, commercial spice blends                        │
+│ - Zero-Failure Fallback: Returns stored recipe if LLM fails │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Directory Structure
+
 ```
 DL_Capstone_Poject/
-├── app/
-│   ├── detector.py          # Model 1: Real-time YOLO ingredient detection (<103ms)
-│   ├── normalize.py         # Canonical ingredient name normalization
-│   ├── scorer.py            # Deterministic dish scorer & decision engine
-│   ├── recipes.py           # Catalog recipe loader & scaling
-│   ├── writer.py            # Model 2: Recipe generator with [DECISION] header
-│   ├── main.py              # FastAPI backend (5 endpoints + static mount)
-│   └── web/
-│       └── index.html       # Responsive single-page web application
-├── data/
-│   ├── cnn/                 # Model 1 weights (best.pt) and class definitions
-│   ├── processed/           # Nutritional protein lookup table (IFCT 2017)
-│   └── raw/                 # Dish catalog & regional neighbour graphs
-├── docs/
-│   ├── JETSON_NOTES.md      # Edge deployment guide (TensorRT & llama.cpp)
-│   └── REFERENCES.md        # Official library, dataset & model citations
-├── outputs/
-│   └── pilot_unverified/
-│       └── adapter/         # Model 2 QLoRA adapter weights & tokenizer
+├── api/
+│   └── main.py                     # FastAPI application (6 production endpoints)
 ├── src/
-│   ├── infer.py             # CLI inference script for Model 2
-│   ├── score.py             # Scoring formula module
-│   ├── protein.py           # Verified protein calculation engine
-│   ├── nutrition.py         # ICMR IFCT 2017 & USDA reference database
-│   ├── train.py             # QLoRA fine-tuning script
-│   └── train_yolo.py        # YOLO fine-tuning script
+│   ├── scorer.py                   # Layer 2: DishScorer & canonical normalization
+│   ├── writer.py                   # Layer 3: RecipeWriter (Qwen base & stored fallback)
+│   ├── validators.py               # Layer 3: Step & allergen validation rules
+│   ├── protein.py                  # IFCT 2017 protein lookup engine
+│   └── nutrition.py                # ICMR nutritional database
+├── data/
+│   ├── cnn/best.pt                 # YOLOv8m produce weights (63 classes)
+│   ├── raw/
+│   │   ├── maharashtra_drafts.csv  # 395 catalog dishes with ingredients & steps
+│   │   └── state_neighbours.csv    # Regional proximity graph
+│   └── staples.json                # Free universal pantry staples (salt, oil, etc.)
+├── docs/
+│   ├── writer_eval_v2.json         # Layer 3 (v2) benchmark results
+│   ├── REFERENCES.md               # Dataset and model citations
+│   └── JETSON_NOTES.md             # Edge deployment guidelines
 ├── tests/
-│   ├── images/              # 10 test produce images (CC/Public Domain)
-│   ├── expected.json        # Ground-truth annotations
-│   ├── benchmark_detector.py# Model 1 benchmark (latency, precision, recall)
-│   ├── test_e2e.py          # End-to-end API pipeline simulation
-│   └── test_integration.py  # 9 automated unit/integration tests
-├── config.json              # Configurable scorer weights
-├── requirements.txt         # Pinned production dependencies
-└── README.md
+│   ├── test_scorer.py              # Layer 2 unit & integration tests
+│   ├── test_writer.py              # Layer 3 unit & validator tests
+│   ├── eval_writer_v2.py           # 20-case evaluation benchmark
+│   └── sample_requests/            # Ready-to-use curl JSON payloads
+├── config.json                     # Scorer weights, pantry items, llm_mode
+├── README_API.md                   # Full endpoint reference & JSON schemas
+└── README.md                       # Main documentation & agent integration guide
 ```
 
 ---
 
-## How to Run
+## How to Run & Verify
 
-### 1. Working Directory Note
-Always execute commands from the `DL_Capstone_Poject` directory:
+### 1. Prerequisites & Virtual Environment
+Ensure Python 3.10+ and CUDA (if using GPU) are installed.
 ```powershell
-cd C:\Users\ACER\Desktop\Dev\DL_Project\DL_Capstone_Poject
+cd DL_Capstone_Poject
+.\venv\Scripts\Activate.ps1
 ```
 
-### 2. Run Verification Tests
+### 2. Run Test Suites
 ```powershell
-# Run the 9 automated unit & integration tests
-.\venv\Scripts\python.exe -m unittest tests/test_integration.py
-
-# Run the end-to-end 5-endpoint pipeline test
-.\venv\Scripts\python.exe tests/test_e2e.py
-
-# Benchmark Model 1 (Produce Detector)
-.\venv\Scripts\python.exe tests/benchmark_detector.py
-```
-
-### 3. Launch Web Server
-```powershell
-.\venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-```
-Open your browser at:
-```
-http://127.0.0.1:8000
-```
-
----
-
-## Verified Benchmarks & Resource Metrics
-
-| Metric | Measured Value | Requirement / Limit | Status |
-| :--- | :--- | :--- | :--- |
-| **Model 1 Latency** | 102.94 ms / image (9.7 FPS) | < 2,000 ms | **PASSED** |
-| **Model 1 Coverage** | 63 produce classes (including all 8 targets) | $\ge 5$ classes | **PASSED** |
-| **Model 2 Generation VRAM** | 1.212 GB (4-bit NF4) | < 7.0 GB | **PASSED** |
-| **Total Combined VRAM** | ~1.35 GB | < 7.0 GB | **PASSED** |
-| **JSON Schema Adherence** | 100.0% valid JSON | Strict JSON | **PASSED** |
-| **Recipe Generation Source** | `source="llm"` (AI generated from prompt header) | Authentic AI output | **PASSED** |
-| **Allergen Safety Enforcement**| 0.0% allergen leaks across 20 randomized trials | Zero leaks | **PASSED** |
-
----
-
-## Layer 1 — Detector Evaluation Benchmarks
-
-Evaluation performed on `omorros/kitchen-fruit-vegetable-detection` (120 images, 585 annotations, 40 simple / 40 medium / 40 hard tiers) and out-of-distribution test image `tests/images/test1.jpg`.
-
-### Commands Executed:
-```powershell
-# 1. Benchmark dataset intake & verification
-.\venv\Scripts\python.exe -c "import os, glob; ..."
-
-# 2. Candidate evaluation scripts
-.\venv\Scripts\python.exe -u detector_eval/run_eval.py --candidate best --weights data/cnn/best.pt --license "other"
-.\venv\Scripts\python.exe -u detector_eval/run_eval.py --candidate yoloworld --weights detector_eval/test_setup/yolov8s-worldv2.pt --license "AGPL-3.0"
-.\venv\Scripts\python.exe -u detector_eval/run_eval.py --candidate yoloe --weights detector_eval/models/yoloe-11s-seg.pt --license "AGPL-3.0"
-
-# 3. Master summary aggregation
-.\venv\Scripts\python.exe -c "import pandas as pd; pd.concat([pd.read_csv(f'detector_eval/results/summary_{c}.csv') for c in ['best','yoloworld','yoloe']]).to_csv('detector_eval/results/summary_all_candidates.csv', index=False)"
-```
-
-### Phase C — Safety & Archive Commands
-```powershell
-New-Item -ItemType Directory -Force -Path 'C:\Users\ACER\Desktop\project_archive_big'
-Move-Item -Path 'DL_Capstone_Poject\mobileclip_blt.ts' -Destination 'C:\Users\ACER\Desktop\project_archive_big\'
-Move-Item -Path 'DL_Capstone_Poject\weights\clip\ViT-B-32.pt' -Destination 'C:\Users\ACER\Desktop\project_archive_big\'
-
-# Archiving legacy components into archive/
-git mv app archive/app
-git mv src/score.py archive/src/score.py
-git mv src/test_score.py archive/src/test_score.py
-git mv src/infer.py archive/src/infer.py
-git mv src/train.py archive/src/train.py
-git mv src/train_yolo.py archive/src/train_yolo.py
-git mv src/intake_yolo_dataset.py archive/src/intake_yolo_dataset.py
-git mv CHECKLIST.md archive/CHECKLIST.md
-git mv tests/test_e2e.py archive/tests/test_e2e.py
-git mv tests/test_integration.py archive/tests/test_integration.py
-git mv tests/benchmark_detector.py archive/tests/benchmark_detector.py
-git mv tests/fixtures/sample_dishes.json archive/tests/fixtures/sample_dishes.json
-Move-Item yolo11n.pt archive/yolo11n.pt
-```
-
----
-
-## Layer 2 — FastAPI Detector & Recipe Scorer Endpoints
-
-Clean backend implementation featuring in-memory EXIF-stripped YOLO produce detection, deterministic recipe candidate scoring with allergen/vegetarian filtering, and regional cuisine weighting.
-
-### Commands Executed:
-```powershell
-# 1. Scorer unit test verification
+# Run Layer 2 Scorer tests
 .\venv\Scripts\python.exe -m unittest -v tests/test_scorer.py
 
-# 2. Server startup
+# Run Layer 3 Writer & Validator tests
+.\venv\Scripts\python.exe -m unittest -v tests/test_writer.py
+```
+
+### 3. Launch Backend API Server
+```powershell
 .\venv\Scripts\uvicorn.exe api.main:app --host 127.0.0.1 --port 8000
-
-# 3. Detector API tests
-curl.exe -s http://127.0.0.1:8000/health
-curl.exe -s http://127.0.0.1:8000/ingredients
-curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\onion_01.jpg;type=image/jpeg'
-curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\tomato_01.jpg;type=image/jpeg'
-curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\potato_01.jpg;type=image/jpeg'
-curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\carrot_01.jpg;type=image/jpeg'
-curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\lemon_01.jpg;type=image/jpeg'
-
-# 4. Error handling tests (415, 400, 413)
-curl.exe -s -i -X POST http://127.0.0.1:8000/detect -F 'image=@README.md;type=text/markdown'
-curl.exe -s -i -X POST http://127.0.0.1:8000/detect -F 'not_image=@tests\images\onion_01.jpg;type=image/jpeg'
-curl.exe -s -i -X POST http://127.0.0.1:8000/detect -F 'image=@tests\large_test_file.jpg;type=image/jpeg'
-
+```
+API Documentation & Interactive Swagger UI: `http://127.0.0.1:8000/docs`
 
 ---
 
-## Layer 3 — Recipe Writer Endpoint & Decision Header Evaluation
+## AI Agent Integration Guide (Adding This Layer into Your App)
 
-Layer 3 implements `POST /recipe/generate` using a strict code-built `[DECISION ...]` header, 8 structural validators (JSON schema, dish match, allowed ingredients, quantity scaling, allergen checks, 3-10 steps, time adherence, spice blend constraints), and a fallback mechanism to verified stored catalog recipes when validation fails or `LLM_MODE=off`.
+If you are an AI coding agent or engineer building a web frontend, mobile UI, or client service, follow this exact workflow to integrate the 3 layers.
 
-### Commands Executed:
-```powershell
-# 1. Writer unit tests & validator test suite
-.\venv\Scripts\python.exe -m unittest -v tests/test_writer.py
+### Client Workflow Sequence
 
-# 2. Evaluation benchmark across 4 model/prompt configurations
-.\venv\Scripts\python.exe -u tests/eval_writer.py
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant ClientApp as Client UI (Web / Mobile)
+    participant API as FastAPI Backend (:8000)
 
-# 3. Live API recipe generation tests (LLM_MODE=off)
-curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req1.json
-curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req2.json
-curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req3.json
+    User->>ClientApp: Upload fridge photo
+    ClientApp->>API: POST /detect (multipart/form-data "image")
+    API-->>ClientApp: {"ingredients": [{"name": "onion", "confidence": 0.89}, ...]}
+    ClientApp->>User: Display detected items, allow toggles & pantry selection
 
-# 4. Fallback verification test under LLM_MODE=adapter (verifies safe HTTP 200 catalog fallback on failure, never 500)
-curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req_adapter.json
+    User->>ClientApp: Choose State ("Maharashtra"), Diet ("veg"), Allergens (["dairy"])
+    ClientApp->>API: POST /dishes (JSON body)
+    API-->>ClientApp: {"dishes": [{"id": "kanda_poha", "name": "Kanda Poha", "score": 0.82, ...}]}
+    ClientApp->>User: Display ranked dishes
+
+    User->>ClientApp: Selects "Kanda Poha", sets servings=4, time=30m
+    ClientApp->>API: POST /recipe/generate (JSON body)
+    API-->>ClientApp: {"recipe": {...}, "source": "stored"|"llm", "recipe_status": "unreviewed"}
+    ClientApp->>User: Render formatted recipe card with scaled ingredients & steps
 ```
 
 ---
 
-## Layer 3 (v2) — Steps-Only Recipe Writer & Evaluation
+### Step 1: Detect Produce (`POST /detect`)
+Send the user's produce picture as `multipart/form-data`.
+- **Field Name**: `image`
+- **Supported Formats**: JPEG, PNG (Max size: 10 MB).
+- **Processing**: EXIF stripped in RAM, 0 disk writes.
 
-Layer 3 (v2) redesigns the LLM recipe generation so that code builds ingredients (with scaled quantities), time, missing ingredients, dish name, and local name from the stored catalog row, while the LLM generates plain-text numbered cooking steps only (no JSON, greedy decoding, max_new_tokens 350).
+```javascript
+// JavaScript / TypeScript example
+const formData = new FormData();
+formData.append("image", fileInput.files[0]);
 
-### Commands Executed:
-```powershell
-# 1. Branch creation
-git checkout -b llm-writer-v2
-
-# 2. Step writer unit tests & validator test suite
-.\venv\Scripts\python.exe -m unittest -v tests/test_writer.py
-
-# 3. Evaluation benchmark across stored control vs LLM steps (20 catalog dishes)
-.\venv\Scripts\python.exe -u tests/eval_writer_v2.py
-
-# 4. Live API calls
-curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req1.json
-curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req2.json
-curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req_fail.json
+const detectRes = await fetch("http://127.0.0.1:8000/detect", {
+  method: "POST",
+  body: formData
+});
+const detectData = await detectRes.json();
+// detectData.ingredients -> [{ name: "onion", confidence: 0.91 }, { name: "potato", confidence: 0.85 }]
 ```
 
+---
 
+### Step 2: Score & Filter Dishes (`POST /dishes`)
+Send detected ingredients along with user's pantry items, target state, and dietary restrictions.
 
+```javascript
+const dishesRes = await fetch("http://127.0.0.1:8000/dishes", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    ingredients: detectData.ingredients.map(i => i.name),
+    pantry: ["oil", "salt", "mustard seeds", "turmeric"],
+    state: "Maharashtra",
+    vegetarian_only: true,
+    allergens: []
+  })
+});
+const dishesData = await dishesRes.json();
+// dishesData.dishes -> Array of top matching dishes with score, matched items, and missing items
+```
 
+---
 
+### Step 3: Generate or Retrieve Scaled Recipe (`POST /recipe/generate`)
+When the user clicks on a dish from the ranked list, generate the tailored recipe.
 
+```javascript
+const recipeRes = await fetch("http://127.0.0.1:8000/recipe/generate", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    dish_id: "kanda_poha",
+    ingredients: ["poha", "onion"],
+    pantry: ["oil", "salt"],
+    servings: 4.0,           // Quantities scale automatically
+    time_limit: 30,          // Time limit in minutes
+    allergens: ["dairy"],    // Strictly excluded allergens
+    vegetarian_only: true
+  })
+});
+const recipeData = await recipeRes.json();
+/*
+recipeData = {
+  recipe: {
+    dish_name: "Kanda Poha",
+    local_name: "Kande Pohe",
+    ingredients: [{ item: "poha", quantity: "3 cup" }, ...],
+    steps: ["Place flattened rice in a colander...", ...],
+    time_minutes: 20,
+    missing_ingredients: []
+  },
+  source: "stored",          // "stored" or "llm"
+  recipe_status: "unreviewed",// "reviewed" only if demo_ready == "yes"
+  validation: { passed: true, failures: [] },
+  warnings: ["..."]
+}
+*/
+```
+
+---
+
+### End-to-End Python Client Blueprint
+An AI agent building a Python backend or pipeline can use this single script:
+
+```python
+import httpx
+
+BASE_URL = "http://127.0.0.1:8000"
+
+def run_recipe_pipeline(image_path: str, state="Maharashtra", servings=4.0):
+    with httpx.Client(base_url=BASE_URL, timeout=30.0) as client:
+        # 1. Detect ingredients
+        with open(image_path, "rb") as f:
+            detect_res = client.post("/detect", files={"image": ("photo.jpg", f, "image/jpeg")})
+            detect_res.raise_for_status()
+            detected_items = [i["name"] for i in detect_res.json()["ingredients"]]
+
+        # 2. Get ranked candidate dishes
+        scorer_payload = {
+            "ingredients": detected_items,
+            "pantry": ["oil", "salt", "turmeric", "mustard seeds"],
+            "state": state,
+            "vegetarian_only": True,
+            "allergens": []
+        }
+        dishes_res = client.post("/dishes", json=scorer_payload)
+        dishes = dishes_res.json().get("dishes", [])
+        if not dishes:
+            print("No matching dishes found for the given ingredients.")
+            return None
+
+        top_dish = dishes[0]
+        print(f"Top Matched Dish: {top_dish['name']} (Score: {top_dish['score']})")
+
+        # 3. Retrieve or generate recipe
+        gen_payload = {
+            "dish_id": top_dish["id"],
+            "ingredients": detected_items,
+            "pantry": ["oil", "salt"],
+            "servings": servings,
+            "time_limit": 30,
+            "allergens": [],
+            "vegetarian_only": True
+        }
+        recipe_res = client.post("/recipe/generate", json=gen_payload)
+        recipe_data = recipe_res.json()
+        return recipe_data["recipe"]
+```
+
+---
+
+## Critical Invariants & Rules for AI Agents
+
+1. **Guaranteed Non-500 Fail-Safe**:
+   `POST /recipe/generate` will **NEVER** return HTTP 500 because of an LLM, GPU, CUDA Out-Of-Memory, or parsing error. When anything fails or when `LLM_MODE=off`, it transparently returns the catalog recipe with `source: "stored"`.
+2. **Review Status Transparency**:
+   `recipe_status` is `"reviewed"` **only** if the dish has `demo_ready == "yes"` in the catalog. All other dishes are labeled `"unreviewed"`. Do not alter this field in the UI.
+3. **Shopping List Safety**:
+   `missing_ingredients` uses simple name matching (e.g. `"peanuts"` vs `"raw peanuts"`). Inform users this is an estimate and not yet a certified shopping list.
+4. **Validation Scope**:
+   `validation.passed` reflects the validation of the LLM generation attempt. When `source == "stored"`, the recipe provided is the catalog recipe regardless of the LLM attempt's outcome.
+5. **Configuration Modes**:
+   - `LLM_MODE=off` (Default): Returns verified catalog recipes in <1 ms with 0 GPU consumption. Recommended for production stability.
+   - `LLM_MODE=base`: Uses base `Qwen2.5-1.5B-Instruct` in fp16/bf16 to generate cooking steps dynamically.
+
+---
+
+## Reference & Documentation
+- Detailed API Schema & Error Codes: [README_API.md](file:///c:/Users/ACER/Desktop/Dev/DL_Project/DL_Capstone_Poject/README_API.md)
+- Dataset & Model References: [docs/REFERENCES.md](file:///c:/Users/ACER/Desktop/Dev/DL_Project/DL_Capstone_Poject/docs/REFERENCES.md)
+- Jetson Deployment Notes: [docs/JETSON_NOTES.md](file:///c:/Users/ACER/Desktop/Dev/DL_Project/DL_Capstone_Poject/docs/JETSON_NOTES.md)
