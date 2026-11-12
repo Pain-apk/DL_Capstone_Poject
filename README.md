@@ -186,6 +186,30 @@ curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: appl
 curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req_adapter.json
 ```
 
+---
+
+## Layer 3 (v2) — Steps-Only Recipe Writer & Evaluation
+
+Layer 3 (v2) redesigns the LLM recipe generation so that code builds ingredients (with scaled quantities), time, missing ingredients, dish name, and local name from the stored catalog row, while the LLM generates plain-text numbered cooking steps only (no JSON, greedy decoding, max_new_tokens 350).
+
+### Commands Executed:
+```powershell
+# 1. Branch creation
+git checkout -b llm-writer-v2
+
+# 2. Step writer unit tests & validator test suite
+.\venv\Scripts\python.exe -m unittest -v tests/test_writer.py
+
+# 3. Evaluation benchmark across stored control vs LLM steps (20 catalog dishes)
+.\venv\Scripts\python.exe -u tests/eval_writer_v2.py
+
+# 4. Live API calls
+curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req1.json
+curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req2.json
+curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req_fail.json
+```
+
+
 
 
 

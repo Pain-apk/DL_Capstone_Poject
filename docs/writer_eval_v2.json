@@ -1,0 +1,498 @@
+{
+  "stored_steps_control": {
+    "config_id": "stored_steps_control",
+    "config_name": "Stored steps (control)",
+    "cases_run": 20,
+    "validation_pass_pct": 50.0,
+    "failures_by_type": {
+      "step_count": 0,
+      "word_count": 0,
+      "unallowed_ingredient": 7,
+      "allergen": 7,
+      "spice_blend": 0,
+      "other": 0
+    },
+    "allergen_violations": 7,
+    "invented_ingredient_steps": 7,
+    "avg_seconds": 0.0,
+    "max_seconds": 0.0,
+    "reviewer_rating": "",
+    "cases": [
+      {
+        "case_num": 1,
+        "dish_id": "kanda_poha",
+        "dish_name": "Kanda Poha",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Step 1 contains unallowed ingredient: 'rice' not in allowed ingredients"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 2,
+        "dish_id": "batata_poha",
+        "dish_name": "Batata Poha",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 7
+      },
+      {
+        "case_num": 3,
+        "dish_id": "dadpe_pohe",
+        "dish_name": "Dadpe Pohe",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Allergen violation in step 4: contains 'peanut' matching excluded allergen 'peanuts'"
+        ],
+        "step_count": 6
+      },
+      {
+        "case_num": 4,
+        "dish_id": "misal_pav",
+        "dish_name": "Misal Pav",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Step 7 contains unallowed ingredient: 'pav' not in allowed ingredients"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 5,
+        "dish_id": "puneri_misal",
+        "dish_name": "Puneri Misal",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 7
+      },
+      {
+        "case_num": 6,
+        "dish_id": "batata_vada",
+        "dish_name": "Batata Vada",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Allergen violation in step 5: contains 'flour' matching excluded allergen 'gluten'"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 7,
+        "dish_id": "vada_pav",
+        "dish_name": "Vada Pav",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 6
+      },
+      {
+        "case_num": 8,
+        "dish_id": "sabudana_vada",
+        "dish_name": "Sabudana Vada",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Step 7 contains unallowed ingredient: 'curd' not in allowed ingredients"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 9,
+        "dish_id": "sabudana_khichdi",
+        "dish_name": "Sabudana Khichdi",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 3,
+        "failures": [
+          "Step 7 contains unallowed ingredient: 'curd' not in allowed ingredients",
+          "Allergen violation in step 2: contains 'peanut' matching excluded allergen 'peanuts'",
+          "Allergen violation in step 3: contains 'peanut' matching excluded allergen 'peanuts'"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 10,
+        "dish_id": "thalipeeth",
+        "dish_name": "Thalipeeth",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 7
+      },
+      {
+        "case_num": 11,
+        "dish_id": "upma___sanja",
+        "dish_name": "Upma / Sanja",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 6
+      },
+      {
+        "case_num": 12,
+        "dish_id": "kothimbir_vadi",
+        "dish_name": "Kothimbir Vadi",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Allergen violation in step 3: contains 'flour' matching excluded allergen 'gluten'"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 13,
+        "dish_id": "alu_vadi___patra",
+        "dish_name": "Alu Vadi / Patra",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Step 4 contains unallowed ingredient: 'coriander leaves' not in allowed ingredients"
+        ],
+        "step_count": 4
+      },
+      {
+        "case_num": 14,
+        "dish_id": "poha_chivda",
+        "dish_name": "Poha Chivda",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 6
+      },
+      {
+        "case_num": 15,
+        "dish_id": "pav_bhaji",
+        "dish_name": "Pav Bhaji",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 2,
+        "failures": [
+          "Allergen violation in step 2: contains 'butter' matching excluded allergen 'dairy'",
+          "Allergen violation in step 7: contains 'butter' matching excluded allergen 'dairy'"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 16,
+        "dish_id": "sev_pav",
+        "dish_name": "Sev Pav",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 6
+      },
+      {
+        "case_num": 17,
+        "dish_id": "puri_bhaji",
+        "dish_name": "Puri Bhaji",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 7
+      },
+      {
+        "case_num": 18,
+        "dish_id": "pithla_bhakri",
+        "dish_name": "Pithla",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 7
+      },
+      {
+        "case_num": 19,
+        "dish_id": "bharli_vangi",
+        "dish_name": "Bharli Vangi",
+        "latency_sec": 0.0,
+        "validation_passed": false,
+        "failures_count": 2,
+        "failures": [
+          "Step 7 contains unallowed ingredient: 'coriander leaves' not in allowed ingredients",
+          "Step 7 contains unallowed ingredient: 'jowar' not in allowed ingredients"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 20,
+        "dish_id": "kolhapuri_misal",
+        "dish_name": "Kolhapuri Misal",
+        "latency_sec": 0.0,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 7
+      }
+    ]
+  },
+  "llm_steps": {
+    "config_id": "llm_steps",
+    "config_name": "LLM steps (base Qwen2.5-1.5B)",
+    "cases_run": 20,
+    "validation_pass_pct": 50.0,
+    "failures_by_type": {
+      "step_count": 1,
+      "word_count": 1,
+      "unallowed_ingredient": 11,
+      "allergen": 7,
+      "spice_blend": 0,
+      "other": 0
+    },
+    "allergen_violations": 7,
+    "invented_ingredient_steps": 11,
+    "avg_seconds": 12.26,
+    "max_seconds": 16.61,
+    "reviewer_rating": "",
+    "cases": [
+      {
+        "case_num": 1,
+        "dish_id": "kanda_poha",
+        "dish_name": "Kanda Poha",
+        "latency_sec": 10.72,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 10
+      },
+      {
+        "case_num": 2,
+        "dish_id": "batata_poha",
+        "dish_name": "Batata Poha",
+        "latency_sec": 10.57,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 8
+      },
+      {
+        "case_num": 3,
+        "dish_id": "dadpe_pohe",
+        "dish_name": "Dadpe Pohe",
+        "latency_sec": 12.98,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Allergen violation in step 5: contains 'peanut' matching excluded allergen 'peanuts'"
+        ],
+        "step_count": 6
+      },
+      {
+        "case_num": 4,
+        "dish_id": "misal_pav",
+        "dish_name": "Misal Pav",
+        "latency_sec": 13.86,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Step 10 contains unallowed ingredient: 'pav' not in allowed ingredients"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 5,
+        "dish_id": "puneri_misal",
+        "dish_name": "Puneri Misal",
+        "latency_sec": 10.25,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 7
+      },
+      {
+        "case_num": 6,
+        "dish_id": "batata_vada",
+        "dish_name": "Batata Vada",
+        "latency_sec": 16.38,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Allergen violation in step 6: contains 'flour' matching excluded allergen 'gluten'"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 7,
+        "dish_id": "vada_pav",
+        "dish_name": "Vada Pav",
+        "latency_sec": 14.96,
+        "validation_passed": false,
+        "failures_count": 7,
+        "failures": [
+          "Step count must be between 3 and 10, got 12",
+          "Step 2 contains unallowed ingredient: '1 large onion' not in allowed ingredients",
+          "Step 3 contains unallowed ingredient: 'onion' not in allowed ingredients",
+          "Step 4 contains unallowed ingredient: 'coriander leaves' not in allowed ingredients",
+          "Step 5 contains unallowed ingredient: 'curry leaves' not in allowed ingredients",
+          "Step 5 contains unallowed ingredient: 'onion' not in allowed ingredients",
+          "Allergen violation in step 3: contains 'ghee' matching excluded allergen 'dairy'"
+        ],
+        "step_count": 6
+      },
+      {
+        "case_num": 8,
+        "dish_id": "sabudana_vada",
+        "dish_name": "Sabudana Vada",
+        "latency_sec": 13.62,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 10
+      },
+      {
+        "case_num": 9,
+        "dish_id": "sabudana_khichdi",
+        "dish_name": "Sabudana Khichdi",
+        "latency_sec": 9.84,
+        "validation_passed": false,
+        "failures_count": 2,
+        "failures": [
+          "Step 7 contains unallowed ingredient: 'curd' not in allowed ingredients",
+          "Allergen violation in step 4: contains 'peanut' matching excluded allergen 'peanuts'"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 10,
+        "dish_id": "thalipeeth",
+        "dish_name": "Thalipeeth",
+        "latency_sec": 13.22,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 10
+      },
+      {
+        "case_num": 11,
+        "dish_id": "upma___sanja",
+        "dish_name": "Upma / Sanja",
+        "latency_sec": 9.11,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 6
+      },
+      {
+        "case_num": 12,
+        "dish_id": "kothimbir_vadi",
+        "dish_name": "Kothimbir Vadi",
+        "latency_sec": 10.82,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Allergen violation in step 3: contains 'flour' matching excluded allergen 'gluten'"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 13,
+        "dish_id": "alu_vadi___patra",
+        "dish_name": "Alu Vadi / Patra",
+        "latency_sec": 5.32,
+        "validation_passed": false,
+        "failures_count": 3,
+        "failures": [
+          "Step 1 contains unallowed ingredient: 'potatoes' not in allowed ingredients",
+          "Step 2 contains unallowed ingredient: 'potato' not in allowed ingredients",
+          "Step 3 contains unallowed ingredient: 'potato' not in allowed ingredients"
+        ],
+        "step_count": 4
+      },
+      {
+        "case_num": 14,
+        "dish_id": "poha_chivda",
+        "dish_name": "Poha Chivda",
+        "latency_sec": 12.96,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Step 2 has 49 words; exceeds 40 words maximum"
+        ],
+        "step_count": 6
+      },
+      {
+        "case_num": 15,
+        "dish_id": "pav_bhaji",
+        "dish_name": "Pav Bhaji",
+        "latency_sec": 14.96,
+        "validation_passed": false,
+        "failures_count": 2,
+        "failures": [
+          "Allergen violation in step 4: contains 'butter' matching excluded allergen 'dairy'",
+          "Allergen violation in step 8: contains 'butter' matching excluded allergen 'dairy'"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 16,
+        "dish_id": "sev_pav",
+        "dish_name": "Sev Pav",
+        "latency_sec": 8.96,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 6
+      },
+      {
+        "case_num": 17,
+        "dish_id": "puri_bhaji",
+        "dish_name": "Puri Bhaji",
+        "latency_sec": 10.32,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 7
+      },
+      {
+        "case_num": 18,
+        "dish_id": "pithla_bhakri",
+        "dish_name": "Pithla",
+        "latency_sec": 13.47,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 8
+      },
+      {
+        "case_num": 19,
+        "dish_id": "bharli_vangi",
+        "dish_name": "Bharli Vangi",
+        "latency_sec": 16.19,
+        "validation_passed": false,
+        "failures_count": 1,
+        "failures": [
+          "Step 10 contains unallowed ingredient: 'coriander leaves' not in allowed ingredients"
+        ],
+        "step_count": 7
+      },
+      {
+        "case_num": 20,
+        "dish_id": "kolhapuri_misal",
+        "dish_name": "Kolhapuri Misal",
+        "latency_sec": 16.61,
+        "validation_passed": true,
+        "failures_count": 0,
+        "failures": [],
+        "step_count": 8
+      }
+    ]
+  }
+}

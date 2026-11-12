@@ -1,39 +1,39 @@
 """
-src/validators.py — Recipe validation rules.
+src/validators.py — Step-focused recipe validators for Layer 3 (v2).
 NO FastAPI imports allowed in this module.
 
-Validators:
-1. JSON valid: Valid JSON with required schema (dish_name, local_name, ingredients, steps, time_minutes, missing_ingredients).
-2. Dish matches decision: Generated dish matches the requested catalog dish.
-3. Only allowed ingredients: No invented or unauthorized ingredients.
-4. Scaled quantities match: Quantities match expected scaled quantities within 10% tolerance.
-5. No allergens: Zero occurrences of excluded allergens in ingredients, steps, or missing items.
-6. 3-10 steps: Recipe steps count must be between 3 and 10 inclusive.
-7. Time within 50% of limit: Cooking time must be within 50% of requested time limit.
-8. Spice blends are not free staples: Commercial/complex spice blends cannot be hallucinated without being in the allowed ingredients.
+Validators for recipe steps:
+1. 3-10 steps: Recipe steps count must be between 3 and 10 inclusive.
+2. 5-40 words per step: Each individual step must contain between 5 and 40 words.
+3. No unallowed catalog ingredients: No ingredient name from the catalog vocabulary
+   appears in a step unless it is in the allowed list (dish ingredients + staples).
+4. No allergen words: Zero occurrences of excluded allergen terms in any step.
+5. Spice blends only if allowed: Commercial/complex spice blends cannot appear in any step
+   unless they are present in the dish's catalog ingredients.
 """
 
-import json
+import os
 import re
+import pandas as pd
 from typing import Dict, Any, List, Set, Tuple, Optional, Union
 
-# Common spice blends that are NOT basic free staples
+# Common commercial/complex spice blends that are NOT free staples
 SPICE_BLENDS = {
     "garam masala", "pav bhaji masala", "godha masala", "goda masala",
     "sambhar powder", "sambar powder", "biryani masala", "chaat masala",
     "kitchen king", "chana masala powder", "rasam powder", "curry powder",
-    "tandoori masala", "panch phoron", "kashmiri masala"
+    "tandoori masala", "panch phoron", "kashmiri masala", "kala masala"
 }
 
-# Rich allergen synonyms and derivative ingredients
+# Rich allergen synonyms and derivative food terms
 ALLERGEN_TERMS = {
     "dairy": [
         "dairy", "milk", "butter", "cheese", "ghee", "paneer", "curd", "yogurt",
-        "yoghurt", "cream", "malai", "whey", "makkhan", "khoya", "mawa"
+        "yoghurt", "cream", "malai", "whey", "makkhan", "khoya", "mawa", "buttermilk"
     ],
     "gluten": [
         "gluten", "wheat", "flour", "maida", "atta", "suji", "sooji", "semolina",
-        "rava", "bread", "roti", "chapati", "naan", "puri", "bhatura"
+        "rava", "bread", "roti", "chapati", "naan", "puri", "bhatura", "pav"
     ],
     "peanuts": [
         "peanut", "peanuts", "groundnut", "groundnuts", "shengdana", "singdana", "moongphali"
@@ -73,340 +73,251 @@ ALLERGEN_TERMS = {
     ]
 }
 
-
-def parse_quantity_number(qty_str: str) -> Optional[float]:
-    """
-    Extract numeric float from quantity string.
-    Supports mixed fractions ('1 1/2'), simple fractions ('1/2'), decimals ('1.5'), ints ('2').
-    Returns None for qualitative descriptions ('to taste', 'as needed', 'pinch').
-    """
-    if not qty_str:
-        return None
-    s = str(qty_str).lower().strip()
-    if any(q in s for q in ["to taste", "as needed", "pinch", "a pinch"]):
-        return None
-
-    # Mixed fraction: e.g. "1 1/2"
-    m_mixed = re.match(r"^(\d+)\s+(\d+)/(\d+)", s)
-    if m_mixed:
-        whole, num, den = m_mixed.groups()
-        if float(den) != 0:
-            return float(whole) + float(num) / float(den)
-
-    # Simple fraction: e.g. "1/2" or "3/4"
-    m_frac = re.match(r"^(\d+)/(\d+)", s)
-    if m_frac:
-        num, den = m_frac.groups()
-        if float(den) != 0:
-            return float(num) / float(den)
-
-    # Decimal or integer: e.g. "1.5" or "2"
-    m_num = re.match(r"^(\d+(?:\.\d+)?)", s)
-    if m_num:
-        return float(m_num.group(1))
-
-    return None
+# Cached catalog vocabulary
+_CATALOG_VOCAB_CACHE: Optional[Set[str]] = None
 
 
 def normalize_item_name(name: str) -> str:
     """Normalize ingredient name for matching."""
+    if not name:
+        return ""
     s = str(name).lower().strip()
-    s = re.sub(r"[^\w\s]", " ", s)
+    s = re.sub(r"[\(\)\[\],]", " ", s)
     s = re.sub(r"\s+", " ", s).strip()
     return s
 
 
-def validate_json_schema(recipe_obj: Union[str, Dict[str, Any]]) -> Tuple[bool, Optional[Dict[str, Any]], Optional[str]]:
-    """Validator 1: Validate JSON structure and required keys."""
-    if isinstance(recipe_obj, str):
-        raw = recipe_obj.strip()
-        # Handle code fences
-        if "```json" in raw:
-            raw = raw.split("```json", 1)[1].split("```", 1)[0].strip()
-        elif "```" in raw:
-            raw = raw.split("```", 1)[1].split("```", 1)[0].strip()
+def load_catalog_ingredient_vocabulary(
+    csv_path: str = "data/raw/maharashtra_drafts.csv"
+) -> Set[str]:
+    """
+    Builds the vocabulary of known ingredient names from the catalog.
+    Extracts distinct ingredient terms across all catalog dishes.
+    """
+    global _CATALOG_VOCAB_CACHE
+    if _CATALOG_VOCAB_CACHE is not None:
+        return _CATALOG_VOCAB_CACHE
+
+    vocab = set()
+    if os.path.exists(csv_path):
         try:
-            parsed = json.loads(raw)
-        except Exception as e:
-            return False, None, f"JSON parse error: {str(e)}"
-    elif isinstance(recipe_obj, dict):
-        parsed = recipe_obj
-    else:
-        return False, None, "Expected JSON string or dict"
+            df = pd.read_csv(csv_path)
+            for _, r in df.iterrows():
+                # From main ingredients
+                for m in str(r.get("main_ingredients", "")).split("|"):
+                    m_clean = normalize_item_name(m)
+                    if m_clean and len(m_clean) > 2:
+                        vocab.add(m_clean)
+                # From ingredients with quantity
+                iq_str = str(r.get("ingredients_with_quantity", ""))
+                for line in iq_str.split("|"):
+                    parts = line.split(":", 1)
+                    item = parts[1].strip() if len(parts) > 1 else parts[0].strip()
+                    item_clean = normalize_item_name(item)
+                    if item_clean and len(item_clean) > 2:
+                        vocab.add(item_clean)
+        except Exception:
+            pass
 
-    if not isinstance(parsed, dict):
-        return False, None, "Recipe root must be a JSON object"
+    # Core base ingredient nouns that must be recognized
+    core_nouns = {
+        "potato", "potatoes", "tomato", "tomatoes", "onion", "onions", "paneer",
+        "chicken", "fish", "mutton", "pork", "egg", "eggs", "poha", "rava",
+        "sooji", "suji", "besan", "rice", "matki", "moong", "chana", "peanuts",
+        "peanut", "coconut", "farsan", "jowar", "atta", "cashew", "cashews",
+        "brinjal", "brinjals", "eggplant", "capsicum", "carrot", "carrots",
+        "peas", "tamarind", "sabudana", "curd", "yogurt", "milk", "cheese",
+        "butter", "ghee", "garlic", "ginger", "pav", "colocasia", "sev",
+        "mustard seeds", "cumin seeds", "curry leaves", "coriander leaves",
+        "green chillies", "green chilli", "turmeric", "red chilli powder",
+        "oil", "salt", "sugar", "water"
+    }
+    vocab.update(core_nouns)
 
-    required_keys = ["dish_name", "local_name", "ingredients", "steps", "time_minutes", "missing_ingredients"]
-    for k in required_keys:
-        if k not in parsed:
-            return False, None, f"Missing required JSON key: '{k}'"
+    # Filter out common adjectives or cooking terms
+    non_ingredients = {
+        "chopped", "finely", "fresh", "dry", "boiled", "sliced", "crushed",
+        "grated", "roasted", "fried", "slit", "large", "medium", "small",
+        "minced", "thinly", "pureed", "diced", "peeled", "tender", "round",
+        "sprouted", "soaked", "prepared", "toasting", "deep", "shallow", "pan",
+        "leaves", "seeds", "powder", "paste", "thick", "thin", "soft", "sweet",
+        "sour", "raw", "hot", "warm", "cold", "white", "purple", "ripe"
+    }
+    vocab = {x for x in vocab if x not in non_ingredients and len(x) > 2}
 
-    if not isinstance(parsed["dish_name"], str) or not parsed["dish_name"].strip():
-        return False, None, "'dish_name' must be a non-empty string"
-    if not isinstance(parsed["local_name"], str):
-        return False, None, "'local_name' must be a string"
-    if not isinstance(parsed["ingredients"], list):
-        return False, None, "'ingredients' must be a list"
-    for idx, ing in enumerate(parsed["ingredients"]):
-        if not isinstance(ing, dict) or "item" not in ing or "quantity" not in ing:
-            return False, None, f"Ingredient at index {idx} must be an object with 'item' and 'quantity'"
-    if not isinstance(parsed["steps"], list) or len(parsed["steps"]) == 0:
-        return False, None, "'steps' must be a non-empty list of instructions"
-    if not isinstance(parsed["time_minutes"], (int, float)) or parsed["time_minutes"] <= 0:
-        return False, None, "'time_minutes' must be a positive number"
-    if not isinstance(parsed["missing_ingredients"], list):
-        return False, None, "'missing_ingredients' must be a list"
-
-    return True, parsed, None
-
-
-def validate_dish_match(recipe: Dict[str, Any], expected_dish: str) -> Tuple[bool, Optional[str]]:
-    """Validator 2: Verify generated dish matches the decision target dish."""
-    gen_dish = normalize_item_name(recipe.get("dish_name", ""))
-    exp_dish = normalize_item_name(expected_dish)
-
-    if not gen_dish or not exp_dish:
-        return False, f"Dish mismatch: expected '{expected_dish}', got '{recipe.get('dish_name')}'"
-
-    # Exact or sub-token match
-    if gen_dish == exp_dish or gen_dish in exp_dish or exp_dish in gen_dish:
-        return True, None
-
-    # Check words overlap
-    gen_words = set(gen_dish.split())
-    exp_words = set(exp_dish.split())
-    if gen_words and exp_words and len(gen_words.intersection(exp_words)) >= min(len(gen_words), len(exp_words)):
-        return True, None
-
-    return False, f"Dish mismatch: expected '{expected_dish}', got '{recipe.get('dish_name')}'"
+    _CATALOG_VOCAB_CACHE = vocab
+    return _CATALOG_VOCAB_CACHE
 
 
-def validate_allowed_ingredients(
-    recipe: Dict[str, Any],
-    allowed_ingredients: Set[str]
+def validate_steps_count(steps: List[str]) -> Tuple[bool, Optional[str]]:
+    """Validator: 3-10 steps."""
+    if not isinstance(steps, list):
+        return False, "Steps must be a list of strings"
+    count = len(steps)
+    if count < 3 or count > 10:
+        return False, f"Step count must be between 3 and 10, got {count}"
+    return True, None
+
+
+def validate_step_word_counts(steps: List[str]) -> Tuple[bool, List[str]]:
+    """Validator: each step must be between 5 and 40 words."""
+    failures = []
+    for idx, s in enumerate(steps):
+        if not isinstance(s, str):
+            failures.append(f"Step {idx + 1} is not a string")
+            continue
+        words = s.strip().split()
+        word_count = len(words)
+        if word_count < 5:
+            failures.append(f"Step {idx + 1} has only {word_count} words; must be 5-40 words")
+        elif word_count > 40:
+            failures.append(f"Step {idx + 1} has {word_count} words; exceeds 40 words maximum")
+    return (len(failures) == 0), failures
+
+
+def validate_step_ingredients(
+    steps: List[str],
+    allowed_ingredients: Set[str],
+    catalog_vocab: Optional[Set[str]] = None
 ) -> Tuple[bool, List[str]]:
     """
-    Validator 3: Verify only allowed ingredients are present. No invented ingredients.
-    allowed_ingredients must contain normalized ingredient names.
+    Validator: no catalog ingredient name appears in a step unless it is in the allowed list.
+    allowed_ingredients includes dish ingredients + staples + user pantry.
     """
     failures = []
-    normalized_allowed = {normalize_item_name(x) for x in allowed_ingredients}
+    if catalog_vocab is None:
+        catalog_vocab = load_catalog_ingredient_vocabulary()
 
-    for ing in recipe.get("ingredients", []):
-        raw_item = ing.get("item", "")
-        norm_item = normalize_item_name(raw_item)
-        if not norm_item:
-            continue
+    norm_allowed = {normalize_item_name(x) for x in allowed_ingredients if x}
+    # Universal kitchen elements always permissible in cooking methods
+    norm_allowed.update({"water", "salt"})
 
-        # Check direct or token match
-        matched = False
-        if norm_item in normalized_allowed:
-            matched = True
-        else:
-            for allowed in normalized_allowed:
-                if norm_item in allowed or allowed in norm_item:
-                    matched = True
-                    break
-                # Check stems
-                if norm_item.endswith("s") and norm_item[:-1] in allowed:
-                    matched = True
-                    break
-                if allowed.endswith("s") and allowed[:-1] in norm_item:
-                    matched = True
-                    break
+    # Sort vocabulary by length descending so compound items match first
+    sorted_vocab = sorted(catalog_vocab, key=lambda x: len(x), reverse=True)
 
-        if not matched:
-            failures.append(f"Invented ingredient not allowed: '{raw_item}'")
+    for idx, step in enumerate(steps):
+        step_lower = step.lower()
+        found_unallowed_in_step = set()
+
+        for term in sorted_vocab:
+            # Match word boundary
+            # Support plural forms ending in s or es
+            pattern = r"\b" + re.escape(term) + r"(?:es|s)?\b"
+            if re.search(pattern, step_lower):
+                # Check if term or stem is allowed
+                is_allowed = False
+                for a in norm_allowed:
+                    if term in a or a in term:
+                        is_allowed = True
+                        break
+                    if term.endswith("s") and term[:-1] in a:
+                        is_allowed = True
+                        break
+                    if a.endswith("s") and a[:-1] in term:
+                        is_allowed = True
+                        break
+
+                if not is_allowed:
+                    # Avoid flagging substring if a longer compound was already matched
+                    if not any(term in already for already in found_unallowed_in_step):
+                        found_unallowed_in_step.add(term)
+                        failures.append(
+                            f"Step {idx + 1} contains unallowed ingredient: '{term}' not in allowed ingredients"
+                        )
 
     return (len(failures) == 0), failures
 
 
-def validate_scaled_quantities(
-    recipe: Dict[str, Any],
-    expected_quantities: Dict[str, str],
-    tolerance: float = 0.10
+def validate_step_allergens(
+    steps: List[str],
+    excluded_allergens: Optional[List[str]] = None
 ) -> Tuple[bool, List[str]]:
-    """
-    Validator 4: Verify scaled quantities match expected quantities within tolerance (default 10%).
-    expected_quantities is a mapping from normalized ingredient name to expected quantity string.
-    """
-    failures = []
-    norm_expected = {}
-    for k, v in expected_quantities.items():
-        norm_expected[normalize_item_name(k)] = (v, parse_quantity_number(v))
-
-    for ing in recipe.get("ingredients", []):
-        item = normalize_item_name(ing.get("item", ""))
-        got_qty_str = str(ing.get("quantity", ""))
-        got_num = parse_quantity_number(got_qty_str)
-
-        # Find best matching expected ingredient
-        exp_match = None
-        if item in norm_expected:
-            exp_match = norm_expected[item]
-        else:
-            for k_exp, val in norm_expected.items():
-                if item in k_exp or k_exp in item:
-                    exp_match = val
-                    break
-
-        if exp_match is None:
-            continue
-
-        exp_qty_str, exp_num = exp_match
-        if exp_num is not None:
-            if got_num is None:
-                failures.append(f"Quantity mismatch for '{ing.get('item')}': expected ~{exp_qty_str}, got non-numeric '{got_qty_str}'")
-            else:
-                diff = abs(got_num - exp_num)
-                relative_error = diff / max(exp_num, 1e-6)
-                if relative_error > tolerance:
-                    failures.append(f"Quantity mismatch for '{ing.get('item')}': expected ~{exp_qty_str} ({exp_num}), got '{got_qty_str}' ({got_num}, diff={relative_error*100:.1f}%)")
-
-    return (len(failures) == 0), failures
-
-
-def validate_no_allergens(
-    recipe: Dict[str, Any],
-    excluded_allergens: List[str]
-) -> Tuple[bool, List[str]]:
-    """
-    Validator 5: Zero occurrences of excluded allergens in ingredients, steps, or missing items.
-    """
+    """Validator: zero allergen words appear in any step."""
     failures = []
     if not excluded_allergens:
         return True, []
 
-    # Compile search texts
-    ing_texts = [f"{ing.get('item', '')} {ing.get('quantity', '')}" for ing in recipe.get("ingredients", [])]
-    steps_texts = [str(s) for s in recipe.get("steps", [])]
-    missing_texts = [str(m) for m in recipe.get("missing_ingredients", [])]
-    combined_text = " ".join(ing_texts + steps_texts + missing_texts).lower()
+    for idx, step in enumerate(steps):
+        step_lower = step.lower()
+        for allergen in excluded_allergens:
+            a_clean = allergen.lower().strip()
+            if not a_clean:
+                continue
+            terms = ALLERGEN_TERMS.get(a_clean, [a_clean])
+            if a_clean not in terms:
+                terms.append(a_clean)
 
-    for allergen in excluded_allergens:
-        a_clean = allergen.lower().strip()
-        if not a_clean:
-            continue
-
-        # Get synonym terms
-        terms = ALLERGEN_TERMS.get(a_clean, [a_clean])
-        if a_clean not in terms:
-            terms.append(a_clean)
-
-        for term in terms:
-            pattern = r"\b" + re.escape(term) + r"\b"
-            if re.search(pattern, combined_text):
-                failures.append(f"Allergen violation: contains '{term}' matching excluded allergen '{allergen}'")
-                break
+            for term in terms:
+                pattern = r"\b" + re.escape(term) + r"(?:es|s)?\b"
+                if re.search(pattern, step_lower):
+                    failures.append(
+                        f"Allergen violation in step {idx + 1}: contains '{term}' matching excluded allergen '{allergen}'"
+                    )
+                    break
 
     return (len(failures) == 0), failures
 
 
-def validate_steps_count(recipe: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
-    """Validator 6: Steps count must be between 3 and 10 inclusive."""
-    steps = recipe.get("steps", [])
-    if not isinstance(steps, list):
-        return False, "Steps must be a list"
-    count = len(steps)
-    if count < 3 or count > 10:
-        return False, f"Step count must be 3-10, got {count}"
-    for idx, s in enumerate(steps):
-        if not isinstance(s, str) or len(s.strip()) < 5:
-            return False, f"Step {idx+1} is empty or too short"
-    return True, None
-
-
-def validate_time_limit(recipe: Dict[str, Any], time_limit: Optional[int]) -> Tuple[bool, Optional[str]]:
-    """Validator 7: Cooking time within 50% of the limit."""
-    if not time_limit or time_limit <= 0:
-        return True, None
-
-    time_val = recipe.get("time_minutes")
-    if not isinstance(time_val, (int, float)):
-        return False, f"Invalid 'time_minutes': {time_val}"
-
-    min_time = 0.5 * time_limit
-    max_time = 1.5 * time_limit
-
-    if time_val < min_time or time_val > max_time:
-        return False, f"Cooking time {time_val}m not within 50% of limit {time_limit}m (allowed: {min_time:.1f}m - {max_time:.1f}m)"
-
-    return True, None
-
-
-def validate_spice_blends(
-    recipe: Dict[str, Any],
-    allowed_catalog_blends: Set[str]
+def validate_step_spice_blends(
+    steps: List[str],
+    allowed_catalog_blends: Optional[Set[str]] = None
 ) -> Tuple[bool, List[str]]:
     """
-    Validator 8: Spice blends are not free staples.
-    Complex spice blends cannot be included unless they were in the allowed catalog ingredients.
+    Validator: spice blends appear only if allowed.
+    Commercial spice blends cannot appear unless they were in the dish's catalog ingredients.
     """
     failures = []
-    norm_allowed_blends = {normalize_item_name(x) for x in allowed_catalog_blends}
+    norm_allowed_blends = {normalize_item_name(x) for x in (allowed_catalog_blends or set())}
 
-    for ing in recipe.get("ingredients", []):
-        item_norm = normalize_item_name(ing.get("item", ""))
+    for idx, step in enumerate(steps):
+        step_lower = step.lower()
         for blend in SPICE_BLENDS:
-            if blend in item_norm:
+            pattern = r"\b" + re.escape(blend) + r"\b"
+            if re.search(pattern, step_lower):
                 if not any(blend in allowed for allowed in norm_allowed_blends):
-                    failures.append(f"Spice blend '{blend}' is not a free staple and was not in allowed catalog ingredients")
+                    failures.append(
+                        f"Step {idx + 1} mentions spice blend '{blend}' which is not in allowed catalog ingredients"
+                    )
 
     return (len(failures) == 0), failures
 
 
-def validate_recipe(
-    recipe_obj: Union[str, Dict[str, Any]],
-    expected_dish: str,
+def validate_steps(
+    steps: List[str],
     allowed_ingredients: Set[str],
-    expected_quantities: Dict[str, str],
+    catalog_vocab: Optional[Set[str]] = None,
     excluded_allergens: Optional[List[str]] = None,
-    time_limit: Optional[int] = None,
-    allowed_catalog_blends: Optional[Set[str]] = None,
-    tolerance: float = 0.10
-) -> Tuple[bool, Dict[str, Any], List[str]]:
+    allowed_catalog_blends: Optional[Set[str]] = None
+) -> Tuple[bool, List[str]]:
     """
-    Master validator combining all 8 checks.
-    Returns (is_valid, parsed_recipe_dict, list_of_failure_reasons).
+    Master step validator combining all 5 step checks:
+    1. 3-10 steps
+    2. Each 5-40 words
+    3. No unallowed catalog ingredients
+    4. No allergen words
+    5. Spice blends only if allowed
     """
     failures: List[str] = []
 
-    # 1. JSON Valid
-    valid_json, recipe, json_err = validate_json_schema(recipe_obj)
-    if not valid_json:
-        return False, {}, [json_err]
+    # 1. Step count (3-10)
+    ok_count, count_err = validate_steps_count(steps)
+    if not ok_count and count_err:
+        failures.append(count_err)
 
-    # 2. Dish matches decision
-    ok_dish, dish_err = validate_dish_match(recipe, expected_dish)
-    if not ok_dish and dish_err:
-        failures.append(dish_err)
+    # 2. Word count per step (5-40)
+    ok_words, word_errs = validate_step_word_counts(steps)
+    failures.extend(word_errs)
 
-    # 3. Only allowed ingredients
-    ok_allowed, invent_errs = validate_allowed_ingredients(recipe, allowed_ingredients)
-    failures.extend(invent_errs)
+    # 3. No unallowed catalog ingredients
+    ok_ing, ing_errs = validate_step_ingredients(steps, allowed_ingredients, catalog_vocab=catalog_vocab)
+    failures.extend(ing_errs)
 
-    # 4. Scaled quantities match
-    ok_qty, qty_errs = validate_scaled_quantities(recipe, expected_quantities, tolerance=tolerance)
-    failures.extend(qty_errs)
-
-    # 5. No allergens
-    ok_allergens, allergen_errs = validate_no_allergens(recipe, excluded_allergens or [])
+    # 4. No allergen words
+    ok_allergens, allergen_errs = validate_step_allergens(steps, excluded_allergens=excluded_allergens)
     failures.extend(allergen_errs)
 
-    # 6. 3-10 steps
-    ok_steps, step_err = validate_steps_count(recipe)
-    if not ok_steps and step_err:
-        failures.append(step_err)
-
-    # 7. Time within 50% of limit
-    ok_time, time_err = validate_time_limit(recipe, time_limit)
-    if not ok_time and time_err:
-        failures.append(time_err)
-
-    # 8. Spice blends not free staples
-    ok_spices, spice_errs = validate_spice_blends(recipe, allowed_catalog_blends or set())
+    # 5. Spice blends only if allowed
+    ok_spices, spice_errs = validate_step_spice_blends(steps, allowed_catalog_blends=allowed_catalog_blends)
     failures.extend(spice_errs)
 
-    return (len(failures) == 0), recipe, failures
-
+    return (len(failures) == 0), failures

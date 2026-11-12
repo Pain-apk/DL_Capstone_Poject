@@ -1,0 +1,11 @@
+{
+  "dish_id": "kanda_poha",
+  "ingredients": ["poha", "onion"],
+  "pantry": ["oil", "salt"],
+  "servings": 2.0,
+  "time_limit": 30,
+  "allergens": [],
+  "vegetarian_only": true,
+  "llm_mode": "force_model_failure"
+}
+
