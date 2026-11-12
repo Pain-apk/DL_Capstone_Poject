@@ -33,6 +33,31 @@ FIXED_SYSTEM_PROMPT = (
 # Concurrency lock: one generation request at a time
 _model_lock = threading.Lock()
 
+# Kitchen pantry staples & safe garnishes (expanded for Indian cooking)
+KITCHEN_BASICS = STAPLES | {
+    "coriander", "coriander leaves", "curry leaves", "fresh coriander",
+    "lemon", "lemon juice", "ghee", "garam masala", "goda masala", "chaat masala",
+    "ginger", "garlic", "chilli", "green chilli", "red chilli", "coconut",
+    "grated coconut", "fresh coconut", "sesame seeds", "peanuts", "roasted peanuts",
+    "sugar", "jaggery", "black pepper", "powder", "oil", "salt", "water",
+    "kasuri methi", "amchur", "jeera", "rai", "cumin", "mustard"
+}
+
+
+def is_safe_pantry_or_seasoning(item_name: str) -> bool:
+    """Return True if item is a common spice, seasoning, garnish, or pantry staple."""
+    name = item_name.lower().strip()
+    # Never allow non-veg items as safe pantry
+    if any(nv in name for nv in NON_VEG_INGREDIENTS):
+        return False
+    safe_keywords = [
+        "masala", "spice", "salt", "oil", "water", "powder", "seeds",
+        "leaves", "chilli", "mirchi", "pepper", "ghee", "butter", "lemon",
+        "juice", "sugar", "jaggery", "hing", "turmeric", "haldi", "coriander",
+        "curry", "cumin", "mustard", "garlic", "ginger", "coconut", "amchur"
+    ]
+    return any(k in name for k in safe_keywords)
+
 # Module-level singleton
 _model = None
 _tokenizer = None
@@ -151,8 +176,9 @@ def build_decision_header(
         f"servings: {servings}   time limit: {max_time if max_time > 0 else 'none'}\n"
         f"avoid: {avoid_str}\n"
         f"allowed ingredients with quantities: {allowed_str}\n"
-        "style: short, plain, modest. Use only the allowed ingredients. If something is missing, "
-        "say it in missing_ingredients. Do not claim authenticity, health benefits or nutrition numbers.\n"
+        "style: short, plain, authentic Indian recipe. Use ONLY ingredients from the allowed list above "
+        "and standard Indian pantry spices. Do NOT invent foreign ingredients (e.g. cooking wine, soy sauce). "
+        "If something is missing, list it in missing_ingredients. Do not claim health benefits or nutrition numbers.\n"
         "[END DECISION]\n"
     )
     return header
@@ -240,15 +266,15 @@ def run_9_checks(
         stored_items
         | set(u.strip().lower() for u in user_ingredients)
         | set(p.strip().lower() for p in pantry)
-        | STAPLES
+        | KITCHEN_BASICS
     )
 
     llm_ingredients = recipe.get("ingredients", [])
     invented = []
     for ing in llm_ingredients:
         item = str(ing.get("item", "")).strip().lower()
-        # relaxed match: item token in allowed set
-        match = any(item in a or a in item for a in allowed_item_set)
+        # relaxed match: item token in allowed set or recognized safe kitchen seasoning/spice
+        match = any(item in a or a in item for a in allowed_item_set) or is_safe_pantry_or_seasoning(item)
         if not match:
             invented.append(item)
     if invented:
@@ -380,8 +406,8 @@ def generate_recipe(
         {"role": "user", "content": full_user_msg}
     ]
 
-    # Acquire lock and run generation with 30s timeout
-    acquired = _model_lock.acquire(timeout=30.0)
+    # Acquire lock and run generation with 60s timeout
+    acquired = _model_lock.acquire(timeout=60.0)
     if not acquired:
         base_response["source"] = "fallback"
         base_response["failed_checks"] = ["Timeout waiting for model lock (server busy)"]
@@ -397,7 +423,7 @@ def generate_recipe(
         with torch.no_grad():
             outputs = model.generate(
                 **inputs,
-                max_new_tokens=450,
+                max_new_tokens=700,
                 do_sample=False,
                 pad_token_id=tokenizer.eos_token_id
             )

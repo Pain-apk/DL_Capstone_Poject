@@ -22,7 +22,8 @@ def test_full_pipeline():
     print(f"  Available states: {len(cfg['states'])}, pantry items: {len(cfg['pantry_options'])}")
 
     print("\n=== 2. TEST POST /detect ===")
-    with open("tests/images/tomato_01.jpg", "rb") as f:
+    tomato_img = os.path.join(PROJECT_ROOT, "tests", "images", "tomato_01.jpg")
+    with open(tomato_img, "rb") as f:
         r = client.post("/detect", files={"image": ("tomato.jpg", f, "image/jpeg")})
     assert r.status_code == 200, f"Detect failed: {r.text}"
     det = r.json()
@@ -65,6 +66,7 @@ def test_full_pipeline():
     assert r.status_code == 200, f"Generate failed: {r.text}"
     gen_res = r.json()
     print(f"  Recipe Source: {gen_res.get('source')}")
+    print(f"  Failed Checks: {gen_res.get('failed_checks')}")
     print(f"  Recipe Title:  {gen_res.get('recipe', {}).get('dish_name')}")
     print(f"  Ingredients:   {len(gen_res.get('recipe', {}).get('ingredients', []))} items")
     print(f"  Steps:         {len(gen_res.get('recipe', {}).get('steps', []))} steps")
@@ -81,3 +83,4 @@ def test_full_pipeline():
 
 if __name__ == "__main__":
     test_full_pipeline()
+
