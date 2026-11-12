@@ -134,5 +134,43 @@ git mv tests/fixtures/sample_dishes.json archive/tests/fixtures/sample_dishes.js
 Move-Item yolo11n.pt archive/yolo11n.pt
 ```
 
+---
+
+## Layer 2 — FastAPI Detector & Recipe Scorer Endpoints
+
+Clean backend implementation featuring in-memory EXIF-stripped YOLO produce detection, deterministic recipe candidate scoring with allergen/vegetarian filtering, and regional cuisine weighting.
+
+### Commands Executed:
+```powershell
+# 1. Scorer unit test verification
+.\venv\Scripts\python.exe -m unittest -v tests/test_scorer.py
+
+# 2. Server startup
+.\venv\Scripts\uvicorn.exe api.main:app --host 127.0.0.1 --port 8000
+
+# 3. Detector API tests
+curl.exe -s http://127.0.0.1:8000/health
+curl.exe -s http://127.0.0.1:8000/ingredients
+curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\onion_01.jpg;type=image/jpeg'
+curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\tomato_01.jpg;type=image/jpeg'
+curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\potato_01.jpg;type=image/jpeg'
+curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\carrot_01.jpg;type=image/jpeg'
+curl.exe -s -X POST http://127.0.0.1:8000/detect -F 'image=@tests\images\lemon_01.jpg;type=image/jpeg'
+
+# 4. Error handling tests (415, 400, 413)
+curl.exe -s -i -X POST http://127.0.0.1:8000/detect -F 'image=@README.md;type=text/markdown'
+curl.exe -s -i -X POST http://127.0.0.1:8000/detect -F 'not_image=@tests\images\onion_01.jpg;type=image/jpeg'
+curl.exe -s -i -X POST http://127.0.0.1:8000/detect -F 'image=@tests\large_test_file.jpg;type=image/jpeg'
+
+# 5. Scorer API tests
+curl.exe -s http://127.0.0.1:8000/dishes/example
+curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req1.json
+curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req2.json
+curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req3.json
+curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req4.json
+curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req5.json
+```
+
+
 
 

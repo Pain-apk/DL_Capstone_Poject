@@ -1,0 +1,7 @@
+{
+  "ingredients": ["tomato", "cucumber"],
+  "pantry": ["oil", "salt"],
+  "state": "Maharashtra",
+  "vegetarian_only": true,
+  "allergens": []
+}

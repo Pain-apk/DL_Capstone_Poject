@@ -1,0 +1,7 @@
+{
+  "ingredients": ["cauliflower", "potato", "onion"],
+  "pantry": ["oil", "salt", "turmeric"],
+  "state": "Gujarat",
+  "vegetarian_only": true,
+  "allergens": []
+}
