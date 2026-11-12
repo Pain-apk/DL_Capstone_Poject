@@ -41,33 +41,70 @@ CONF_LOW = 0.25
 # Module-level singleton — loaded lazily on first detect() call
 _model = None  # type: Any
 _class_names = None  # type: Optional[List[str]]
-_model_loaded = False
+
+
+def _clean_class_name(raw_name: str) -> str:
+    """Normalize multi-synonym or slash-delimited detector class names."""
+    raw_l = raw_name.strip().lower()
+    if any(k in raw_l for k in ["chili", "chilli", "cayenne", "mirchi"]):
+        return "green_chilli"
+    if any(k in raw_l for k in ["eggplant", "aubergine", "brinjal", "baingan"]):
+        return "brinjal"
+    if "garlic" in raw_l:
+        return "garlic"
+    if "onion" in raw_l:
+        return "onion"
+    if "tomato" in raw_l:
+        return "tomato"
+    if "potato" in raw_l and "sweet" not in raw_l:
+        return "potato"
+    if "carrot" in raw_l:
+        return "carrot"
+    if "lemon" in raw_l or "lime" in raw_l:
+        return "lemon"
+    if "ginger" in raw_l:
+        return "ginger"
+    if "bell pepper" in raw_l or "capsicum" in raw_l:
+        return "capsicum"
+    if "pea" in raw_l:
+        return "green peas"
+    if "coconut" in raw_l:
+        return "coconut"
+    if "cucumber" in raw_l:
+        return "cucumber"
+    return raw_l.split("/")[0].strip()
 
 
 def _get_model():
-    """Lazy-load the YOLO model once, respecting env vars."""
-    global _model, _class_names, _model_loaded
+    """Lazy-load the YOLO model once, respecting env vars and candidate fallbacks."""
+    global _model, _class_names
 
-    if _model_loaded:
+    if _model is not None:
         return _model, _class_names
 
-    _model_loaded = True  # mark attempted so we don't retry on failure
-
-    model_path = os.environ.get(
-        "DETECTOR_MODEL",
+    candidate_paths = [
+        os.environ.get("DETECTOR_MODEL", ""),
         os.path.join(PROJECT_ROOT, "data", "cnn", "best.pt"),
-    )
+        os.path.join(PROJECT_ROOT, "data", "cnn", "models", "fruit_vegetable_yolov8m.pt"),
+        os.path.join(PROJECT_ROOT, "yolo11n.pt"),
+    ]
 
-    if not os.path.exists(model_path):
+    model_path = None
+    for p in candidate_paths:
+        if p and os.path.exists(p):
+            model_path = p
+            break
+
+    if not model_path:
         raise ImportError(
-            f"Detector model weights not found at '{model_path}'. "
+            f"Detector model weights not found. Searched candidate paths: {candidate_paths}. "
             "Set DETECTOR_MODEL env var to the correct path, or set "
             "MOCK_DETECTOR=1 to use the mock result instead."
         )
 
     try:
         from ultralytics import YOLO  # type: ignore
-        _model = YOLO(model_path)
+        loaded_model = YOLO(model_path)
     except Exception as exc:
         raise ImportError(
             f"Failed to load detector model from '{model_path}': {exc}"
@@ -76,15 +113,16 @@ def _get_model():
     # Class names: env override takes priority over model names
     env_classes = os.environ.get("DETECTOR_CLASSES", "").strip()
     if env_classes:
-        _class_names = [c.strip() for c in env_classes.split(",")]
+        loaded_names = [c.strip() for c in env_classes.split(",")]
     else:
-        # ultralytics exposes names as a dict {int: str}
         try:
-            names_dict = _model.names
-            _class_names = [names_dict[i] for i in sorted(names_dict.keys())]
+            names_dict = loaded_model.names
+            loaded_names = [names_dict[i] for i in sorted(names_dict.keys())]
         except Exception:
-            _class_names = []
+            loaded_names = []
 
+    _model = loaded_model
+    _class_names = loaded_names
     return _model, _class_names
 
 
@@ -151,7 +189,8 @@ def detect(image_bytes: bytes) -> Dict[str, List[Dict[str, Any]]]:
             conf = float(box.conf[0].item())
 
             if class_names and cls_idx < len(class_names):
-                name = class_names[cls_idx]
+                raw_name = class_names[cls_idx]
+                name = _clean_class_name(raw_name)
             else:
                 name = str(cls_idx)
 

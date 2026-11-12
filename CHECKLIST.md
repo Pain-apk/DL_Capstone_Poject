@@ -121,6 +121,7 @@
 - [x] **C5** All rows with `meat_type != none` strictly excluded from `demo_ready`.
 - [x] **C6** Full git history audited: remote repo is PUBLIC (confirmed HTTP 200 via GitHub API), 0 `.env` files and 0 tokens/credentials leaked. 30 cache `.txt` files present in commit `0646b28`. Options A (make repo private) and B (git-filter-repo history purge) formulated.
 - [x] **C7** Prompt A vs Prompt B 15-case benchmark reported honestly (Prompt A quantity mismatch: 38.7% vs Prompt B: 17.4%; fallback rate 46.2% due to strict recipe check).
+- [x] **C8** Web image search & detector bug fix: Downloaded 10 Wikimedia Commons produce photos into `tests/images/` (2.15 MB, resized to max 1280px); created `tests/expected.json`; fixed `_get_model()` lazy-loading bug in `app/detector.py` (`'NoneType' object is not callable` eliminated); integrated `fruit_vegetable_yolov8m.pt` (49.68 MB) covering all 8 classes; measured 98.16 ms average latency on RTX 5050 (10.2 FPS, 61.5% recall, 40.0% precision); tested end-to-end pipeline across all 5 endpoints via `scratch/test_e2e_flow.py` (PASS).
 
 ---
 

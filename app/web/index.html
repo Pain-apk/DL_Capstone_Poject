@@ -329,7 +329,12 @@
           showAlert("No ingredients detected with high confidence. You can add them manually.");
         }
       } catch (err) {
-        showAlert(`Detection error: ${err.message}`);
+        let msg = err.message || "Unknown error";
+        try {
+          const parsed = JSON.parse(msg);
+          if (parsed && parsed.detail) msg = parsed.detail;
+        } catch (_) {}
+        showAlert(`Detection error: ${msg}`);
       } finally {
         btn.innerHTML = "⚡ Detect Ingredients";
         btn.disabled = false;
@@ -394,7 +399,12 @@
           showAlert("No dishes matched all constraints. Try unchecking Vegetarian Only or increasing Max Time.");
         }
       } catch (err) {
-        showAlert(`Error scoring dishes: ${err.message}`);
+        let msg = err.message || "Unknown error";
+        try {
+          const parsed = JSON.parse(msg);
+          if (parsed && parsed.detail) msg = parsed.detail;
+        } catch (_) {}
+        showAlert(`Error scoring dishes: ${msg}`);
       } finally {
         btn.innerHTML = "🔍 Find Dishes & Decide";
         btn.disabled = false;

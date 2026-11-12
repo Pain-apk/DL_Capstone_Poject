@@ -1,8 +1,35 @@
 {
-  "_note": "User phone photos test set. Keys are image filenames in tests/images/, values are expected ground-truth ingredient names (canonical lowercase).",
-  "_instructions": "Place 10-20 phone photos into tests/images/ and list their ground truth below. Evaluation will run against them automatically.",
-  "photo_onion_tomato.jpg": ["onion", "tomato"],
-  "photo_potato_garlic.jpg": ["potato", "garlic"],
-  "photo_mixed_veg.jpg": ["onion", "tomato", "potato", "garlic", "green chilli"]
+  "onion_01.jpg": [
+    "onion"
+  ],
+  "tomato_01.jpg": [
+    "tomato"
+  ],
+  "potato_01.jpg": [
+    "potato"
+  ],
+  "garlic_01.jpg": [
+    "garlic"
+  ],
+  "carrot_01.jpg": [
+    "carrot"
+  ],
+  "green_chilli_01.jpg": [
+    "green_chilli"
+  ],
+  "lemon_01.jpg": [
+    "lemon"
+  ],
+  "combo_veggies_01.jpg": [
+    "carrot",
+    "tomato",
+    "potato"
+  ],
+  "combo_produce_02.jpg": [
+    "tomato",
+    "carrot"
+  ],
+  "brinjal_01.jpg": [
+    "brinjal"
+  ]
 }
-

@@ -47,4 +47,15 @@
 | 13 | Datasets | 5.1.0 | https://huggingface.co/docs/datasets | Apache 2.0 | 2026-11-07 | 200 (download) | JSONL dataset manipulation |
 | 14 | Accelerate | 1.15.0 | https://huggingface.co/docs/accelerate | Apache 2.0 | 2026-11-07 | 200 (download) | Training acceleration utility |
 | 15 | TRL | 1.17.1 | https://huggingface.co/docs/trl | Apache 2.0 | 2026-11-07 | 200 (download) | SFTTrainer for QLoRA fine-tuning |
+| 16 | SnapStock Produce Detector (`fruit_vegetable_yolov8m.pt`) | YOLOv8m (49.68 MB) | https://huggingface.co/Senu-12/snapstock-fruit-vegetable-detector | Apache 2.0 | 2026-11-12 | 200 (download) | Pretrained produce detector covering target vegetable classes |
+| 17 | Test Image: Onion (`File:Onions.jpg`) | 130 KB | https://upload.wikimedia.org/wikipedia/commons/1/1b/Onions.jpg | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 18 | Test Image: Tomato (`File:Tomato_je.jpg`) | 232 KB | https://upload.wikimedia.org/wikipedia/commons/8/89/Tomato_je.jpg | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 19 | Test Image: Potato (`File:Patates.jpg`) | 1195 KB | https://upload.wikimedia.org/wikipedia/commons/a/ab/Patates.jpg | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 20 | Test Image: Garlic (`File:Garlic.jpg`) | 532 KB | https://upload.wikimedia.org/wikipedia/commons/2/22/Garlic.jpg | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 21 | Test Image: Carrot (`File:Carrots_of_many_colors.jpg`) | 3461 KB | https://upload.wikimedia.org/wikipedia/commons/3/32/Carrots_of_many_colors.jpg | Public Domain | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 22 | Test Image: Brinjal (`File:Egg_plant.JPG`) | 2623 KB | https://upload.wikimedia.org/wikipedia/commons/8/89/Egg_plant.JPG | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 23 | Test Image: Green Chilli (`File:Green_chili_peppers.jpg`) | 541 KB | https://upload.wikimedia.org/wikipedia/commons/3/39/Green_chili_peppers.jpg | CC BY-SA 4.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 24 | Test Image: Lemon (`File:Lemon.jpg`) | 279 KB | https://upload.wikimedia.org/wikipedia/commons/e/e4/Lemon.jpg | CC BY-SA 2.5 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 25 | Test Image: Veggies Combo (`File:Veggies.jpg`) | 7861 KB | https://upload.wikimedia.org/wikipedia/commons/3/31/Veggies.jpg | CC BY-SA 3.0 | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
+| 26 | Test Image: Produce Combo (`File:Fresh_Vegetable_Produce_(Unsplash).jpg`) | 2221 KB | https://upload.wikimedia.org/wikipedia/commons/b/b0/Fresh_Vegetable_Produce_%28Unsplash%29.jpg | CC0 (Public Domain) | 2026-11-12 | 200 (download) | Test evaluation image in tests/images/ |
 
