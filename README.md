@@ -117,6 +117,22 @@ Evaluation performed on `omorros/kitchen-fruit-vegetable-detection` (120 images,
 New-Item -ItemType Directory -Force -Path 'C:\Users\ACER\Desktop\project_archive_big'
 Move-Item -Path 'DL_Capstone_Poject\mobileclip_blt.ts' -Destination 'C:\Users\ACER\Desktop\project_archive_big\'
 Move-Item -Path 'DL_Capstone_Poject\weights\clip\ViT-B-32.pt' -Destination 'C:\Users\ACER\Desktop\project_archive_big\'
+
+# Archiving legacy components into archive/
+git mv app archive/app
+git mv src/score.py archive/src/score.py
+git mv src/test_score.py archive/src/test_score.py
+git mv src/infer.py archive/src/infer.py
+git mv src/train.py archive/src/train.py
+git mv src/train_yolo.py archive/src/train_yolo.py
+git mv src/intake_yolo_dataset.py archive/src/intake_yolo_dataset.py
+git mv CHECKLIST.md archive/CHECKLIST.md
+git mv tests/test_e2e.py archive/tests/test_e2e.py
+git mv tests/test_integration.py archive/tests/test_integration.py
+git mv tests/benchmark_detector.py archive/tests/benchmark_detector.py
+git mv tests/fixtures/sample_dishes.json archive/tests/fixtures/sample_dishes.json
+Move-Item yolo11n.pt archive/yolo11n.pt
 ```
+
 
 
