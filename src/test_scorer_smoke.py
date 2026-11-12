@@ -36,3 +36,4 @@ print(res4)
 assert res4["dishes"] == []
 
 print("\n[+] Smoke test passed successfully!")
+

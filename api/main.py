@@ -37,8 +37,9 @@ from PIL import Image
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("api.main")
 
-# Import Scorer
+# Import Scorer and Writer
 from src.scorer import DishScorer, canonical_name
+from src.writer import RecipeWriter
 
 # Target 20 Ingredients classification
 DETECTABLE_CLASSES = [
@@ -72,6 +73,7 @@ detector_config = {
     "augment": True
 }
 dish_scorer: Optional[DishScorer] = None
+recipe_writer: Optional[RecipeWriter] = None
 
 def get_file_sha256(path: str) -> str:
     if not os.path.exists(path):
@@ -84,7 +86,7 @@ def get_file_sha256(path: str) -> str:
 
 @app.on_event("startup")
 def startup_event():
-    global model, model_sha256, detector_config, dish_scorer
+    global model, model_sha256, detector_config, dish_scorer, recipe_writer
     logger.info("Initializing Recipe Assistant API...")
 
     # Initialize Scorer
@@ -94,6 +96,14 @@ def startup_event():
     except Exception as e:
         logger.error(f"Failed to initialize DishScorer: {traceback.format_exc()}")
         dish_scorer = None
+
+    # Initialize RecipeWriter
+    try:
+        recipe_writer = RecipeWriter()
+        logger.info("RecipeWriter initialized successfully.")
+    except Exception as e:
+        logger.error(f"Failed to initialize RecipeWriter: {traceback.format_exc()}")
+        recipe_writer = None
 
     # Load detector config
     if os.path.exists(CONFIG_FILE):
@@ -152,6 +162,8 @@ def health_check():
         "status": "ok",
         "detector_loaded": model is not None,
         "scorer_loaded": dish_scorer is not None,
+        "writer_loaded": recipe_writer is not None,
+        "llm_mode": os.getenv("LLM_MODE", "off"),
         "mock_mode": os.getenv("MOCK_DETECTOR") == "1"
     }
 
@@ -351,3 +363,76 @@ def get_dishes_example():
         "vegetarian_only": True,
         "allergens": []
     }
+
+# Pydantic model for /recipe/generate request
+class RecipeGenerateRequest(BaseModel):
+    dish_id: str = Field(..., description="Target dish ID or dish name from catalog")
+    ingredients: Optional[List[str]] = Field(default_factory=list, description="User available ingredients")
+    pantry: Optional[List[str]] = Field(default_factory=list, description="User pantry staples")
+    servings: Optional[float] = Field(default=2.0, description="Target number of servings")
+    time_limit: Optional[int] = Field(default=None, description="Max cooking time in minutes")
+    allergens: Optional[List[str]] = Field(default_factory=list, description="Allergens to exclude entirely")
+    vegetarian_only: Optional[bool] = Field(default=False, description="Strictly vegetarian filter")
+    llm_mode: Optional[str] = Field(default=None, description="Optional override: off | base | adapter")
+
+@app.post("/recipe/generate")
+def generate_recipe(req: RecipeGenerateRequest):
+    """
+    Generate or retrieve recipe for the specified dish_id.
+    Flow:
+      LLM (if LLM_MODE is not off) -> validators -> on failure retry once
+      -> still failing, model missing, CUDA error, or LLM_MODE=off: return
+      stored catalog recipe with source 'stored'.
+      Guaranteed: NEVER returns 500 because of the model.
+    """
+    if dish_scorer is None or recipe_writer is None:
+        logger.error("DishScorer or RecipeWriter not initialized.")
+        return error_response(500, "Internal Server Error: Backend services not initialized")
+
+    # Match dish in catalog
+    matched_dish = None
+    req_id = req.dish_id.strip().lower()
+    for d in dish_scorer.dishes:
+        if d["id"] == req_id or d["name"].lower() == req_id:
+            matched_dish = d
+            break
+
+    if not matched_dish:
+        # Check partial or substring match
+        for d in dish_scorer.dishes:
+            if req_id in d["id"] or req_id in d["name"].lower() or d["id"] in req_id:
+                matched_dish = d
+                break
+
+    if not matched_dish:
+        return error_response(404, f"Dish '{req.dish_id}' not found in catalog")
+
+    try:
+        result = recipe_writer.generate(
+            dish=matched_dish,
+            user_ingredients=req.ingredients or [],
+            pantry=req.pantry or [],
+            servings=req.servings or 2.0,
+            time_limit=req.time_limit,
+            allergens=req.allergens or [],
+            vegetarian_only=bool(req.vegetarian_only),
+            mode_override=req.llm_mode
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Unexpected exception in /recipe/generate: {traceback.format_exc()}")
+        stored = recipe_writer.get_stored_recipe(
+            dish=matched_dish,
+            servings=req.servings or 2.0,
+            user_ingredients=req.ingredients or [],
+            pantry=req.pantry or []
+        )
+        demo_ready = str(matched_dish.get("raw_row", {}).get("demo_ready", "")).strip().lower()
+        return {
+            "recipe": stored,
+            "source": "stored",
+            "recipe_status": "reviewed" if demo_ready == "yes" else "unreviewed",
+            "validation": {"passed": False, "failures": [f"Generation exception: {str(e)}"]},
+            "warnings": ["Unexpected generation error; returned verified stored catalog recipe."]
+        }
+

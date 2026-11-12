@@ -25,3 +25,7 @@ tests/images/test1.jpg
 detector_eval/data/
 tests/large_test_file.jpg
 
+scratch_test_llm.py
+select_cases.py
+scratch_debug_speed.py
+parse_eval_results.py

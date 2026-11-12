@@ -80,3 +80,4 @@ def check_broken_fixed(iq_str):
 
 after_count = sum(1 for r in rows if check_broken_fixed(r.get("ingredients_with_quantity", "")))
 print(f"Broken rows with fixed parser: {after_count}")
+

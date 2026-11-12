@@ -1,0 +1,10 @@
+{
+  "dish_id": "batata_vada",
+  "ingredients": ["potato", "besan", "green chilli", "ginger", "garlic"],
+  "pantry": ["oil", "mustard seeds", "turmeric", "hing", "salt"],
+  "servings": 4.0,
+  "time_limit": 35,
+  "allergens": ["gluten"],
+  "vegetarian_only": true
+}
+

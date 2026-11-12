@@ -8,3 +8,4 @@ with open("data/raw/maharashtra_drafts.csv", "r", encoding="utf-8") as f:
             print(f"Dish: {row['dish_name']} ({row['state']})")
             print(f"  main_ingredients: {row['main_ingredients']}")
             print(f"  iq: {row['ingredients_with_quantity'][:70]}")
+

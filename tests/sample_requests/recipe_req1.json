@@ -1,0 +1,10 @@
+{
+  "dish_id": "kanda_poha",
+  "ingredients": ["poha", "onion", "peanuts", "green chilli"],
+  "pantry": ["oil", "mustard seeds", "turmeric", "salt"],
+  "servings": 4.0,
+  "time_limit": 30,
+  "allergens": ["dairy"],
+  "vegetarian_only": true
+}
+

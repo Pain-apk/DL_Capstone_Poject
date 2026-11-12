@@ -1,0 +1,675 @@
+{
+  "base_no_outline": {
+    "config_id": "base_no_outline",
+    "config_name": "Base without method outline",
+    "model_mode": "base",
+    "cases_run": 20,
+    "cases": [
+      {
+        "case_num": 1,
+        "dish_name": "Kanda Poha",
+        "latency_sec": 32.2,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 4
+      },
+      {
+        "case_num": 2,
+        "dish_name": "Batata Poha",
+        "latency_sec": 26.1,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 3
+      },
+      {
+        "case_num": 3,
+        "dish_name": "Dadpe Pohe",
+        "latency_sec": 17.7,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 2
+      },
+      {
+        "case_num": 4,
+        "dish_name": "Misal Pav",
+        "latency_sec": 27.1,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 5,
+        "dish_name": "Puneri Misal",
+        "latency_sec": 27.7,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 4
+      },
+      {
+        "case_num": 6,
+        "dish_name": "Batata Vada",
+        "latency_sec": 26.6,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 4
+      },
+      {
+        "case_num": 7,
+        "dish_name": "Vada Pav",
+        "latency_sec": 23.5,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 3
+      },
+      {
+        "case_num": 8,
+        "dish_name": "Sabudana Vada",
+        "latency_sec": 25.1,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 9,
+        "dish_name": "Sabudana Khichdi",
+        "latency_sec": 25.6,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 3
+      },
+      {
+        "case_num": 10,
+        "dish_name": "Thalipeeth",
+        "latency_sec": 18.7,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 11,
+        "dish_name": "Upma / Sanja",
+        "latency_sec": 15.6,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 3
+      },
+      {
+        "case_num": 12,
+        "dish_name": "Kothimbir Vadi",
+        "latency_sec": 30.6,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 2
+      },
+      {
+        "case_num": 13,
+        "dish_name": "Alu Vadi / Patra",
+        "latency_sec": 25.4,
+        "json_valid": true,
+        "validation_passed": true,
+        "failures_count": 0
+      },
+      {
+        "case_num": 14,
+        "dish_name": "Poha Chivda",
+        "latency_sec": 20.0,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 3
+      },
+      {
+        "case_num": 15,
+        "dish_name": "Pav Bhaji",
+        "latency_sec": 17.4,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 4
+      },
+      {
+        "case_num": 16,
+        "dish_name": "Sev Pav",
+        "latency_sec": 28.5,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 17,
+        "dish_name": "Puri Bhaji",
+        "latency_sec": 27.1,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 3
+      },
+      {
+        "case_num": 18,
+        "dish_name": "Pithla",
+        "latency_sec": 30.9,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 3
+      },
+      {
+        "case_num": 19,
+        "dish_name": "Bharli Vangi",
+        "latency_sec": 30.0,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 2
+      },
+      {
+        "case_num": 20,
+        "dish_name": "Kolhapuri Misal",
+        "latency_sec": 21.9,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 3
+      }
+    ],
+    "json_valid_pct": 100.0,
+    "validation_pass_pct": 5.0,
+    "avg_seconds": 24.88,
+    "reviewer_rating": ""
+  },
+  "base_with_outline": {
+    "config_id": "base_with_outline",
+    "config_name": "Base with outline",
+    "model_mode": "base",
+    "cases_run": 20,
+    "cases": [
+      {
+        "case_num": 1,
+        "dish_name": "Kanda Poha",
+        "latency_sec": 27.1,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 2,
+        "dish_name": "Batata Poha",
+        "latency_sec": 35.3,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 3,
+        "dish_name": "Dadpe Pohe",
+        "latency_sec": 37.0,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 4,
+        "dish_name": "Misal Pav",
+        "latency_sec": 22.2,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 5,
+        "dish_name": "Puneri Misal",
+        "latency_sec": 35.2,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 6,
+        "dish_name": "Batata Vada",
+        "latency_sec": 38.3,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 7,
+        "dish_name": "Vada Pav",
+        "latency_sec": 25.1,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 8,
+        "dish_name": "Sabudana Vada",
+        "latency_sec": 23.9,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 9,
+        "dish_name": "Sabudana Khichdi",
+        "latency_sec": 34.2,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 10,
+        "dish_name": "Thalipeeth",
+        "latency_sec": 24.1,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 11,
+        "dish_name": "Upma / Sanja",
+        "latency_sec": 31.4,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 12,
+        "dish_name": "Kothimbir Vadi",
+        "latency_sec": 32.1,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 13,
+        "dish_name": "Alu Vadi / Patra",
+        "latency_sec": 32.2,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 14,
+        "dish_name": "Poha Chivda",
+        "latency_sec": 32.3,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 15,
+        "dish_name": "Pav Bhaji",
+        "latency_sec": 25.5,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 16,
+        "dish_name": "Sev Pav",
+        "latency_sec": 36.0,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 17,
+        "dish_name": "Puri Bhaji",
+        "latency_sec": 27.2,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 18,
+        "dish_name": "Pithla",
+        "latency_sec": 25.7,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 19,
+        "dish_name": "Bharli Vangi",
+        "latency_sec": 31.4,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 20,
+        "dish_name": "Kolhapuri Misal",
+        "latency_sec": 31.7,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      }
+    ],
+    "json_valid_pct": 0.0,
+    "validation_pass_pct": 0.0,
+    "avg_seconds": 30.4,
+    "reviewer_rating": ""
+  },
+  "adapter_trained_format": {
+    "config_id": "adapter_trained_format",
+    "config_name": "Adapter in trained format",
+    "model_mode": "adapter",
+    "cases_run": 20,
+    "cases": [
+      {
+        "case_num": 1,
+        "dish_name": "Kanda Poha",
+        "latency_sec": 59.7,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 2,
+        "dish_name": "Batata Poha",
+        "latency_sec": 54.0,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 7
+      },
+      {
+        "case_num": 3,
+        "dish_name": "Dadpe Pohe",
+        "latency_sec": 56.2,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 4,
+        "dish_name": "Misal Pav",
+        "latency_sec": 57.1,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 5,
+        "dish_name": "Puneri Misal",
+        "latency_sec": 52.4,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 5
+      },
+      {
+        "case_num": 6,
+        "dish_name": "Batata Vada",
+        "latency_sec": 53.7,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 4
+      },
+      {
+        "case_num": 7,
+        "dish_name": "Vada Pav",
+        "latency_sec": 52.1,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 4
+      },
+      {
+        "case_num": 8,
+        "dish_name": "Sabudana Vada",
+        "latency_sec": 56.9,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 9,
+        "dish_name": "Sabudana Khichdi",
+        "latency_sec": 53.7,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 10,
+        "dish_name": "Thalipeeth",
+        "latency_sec": 58.0,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 11,
+        "dish_name": "Upma / Sanja",
+        "latency_sec": 60.3,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 12,
+        "dish_name": "Kothimbir Vadi",
+        "latency_sec": 53.7,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 13,
+        "dish_name": "Alu Vadi / Patra",
+        "latency_sec": 55.9,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 14,
+        "dish_name": "Poha Chivda",
+        "latency_sec": 58.4,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 15,
+        "dish_name": "Pav Bhaji",
+        "latency_sec": 55.2,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 16,
+        "dish_name": "Sev Pav",
+        "latency_sec": 34.9,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 17,
+        "dish_name": "Puri Bhaji",
+        "latency_sec": 56.6,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 5
+      },
+      {
+        "case_num": 18,
+        "dish_name": "Pithla",
+        "latency_sec": 56.2,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 19,
+        "dish_name": "Bharli Vangi",
+        "latency_sec": 53.5,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 20,
+        "dish_name": "Kolhapuri Misal",
+        "latency_sec": 55.6,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 4
+      }
+    ],
+    "json_valid_pct": 35.0,
+    "validation_pass_pct": 0.0,
+    "avg_seconds": 54.7,
+    "reviewer_rating": ""
+  },
+  "adapter_decision_header": {
+    "config_id": "adapter_decision_header",
+    "config_name": "Adapter with DECISION header",
+    "model_mode": "adapter",
+    "cases_run": 18,
+    "status": "stopped early: 90% JSON-valid threshold mathematically unreachable",
+    "cases": [
+      {
+        "case_num": 1,
+        "dish_name": "Kanda Poha",
+        "latency_sec": 40.2,
+        "json_valid": true,
+        "validation_passed": true,
+        "failures_count": 0
+      },
+      {
+        "case_num": 2,
+        "dish_name": "Batata Poha",
+        "latency_sec": 41.5,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 3,
+        "dish_name": "Dadpe Pohe",
+        "latency_sec": 62.7,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 4,
+        "dish_name": "Misal Pav",
+        "latency_sec": 61.7,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 5,
+        "dish_name": "Puneri Misal",
+        "latency_sec": 57.5,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 6,
+        "dish_name": "Batata Vada",
+        "latency_sec": 46.2,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 2
+      },
+      {
+        "case_num": 7,
+        "dish_name": "Vada Pav",
+        "latency_sec": 56.5,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 5
+      },
+      {
+        "case_num": 8,
+        "dish_name": "Sabudana Vada",
+        "latency_sec": 58.7,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 9,
+        "dish_name": "Sabudana Khichdi",
+        "latency_sec": 54.3,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 10,
+        "dish_name": "Thalipeeth",
+        "latency_sec": 56.0,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 11,
+        "dish_name": "Upma / Sanja",
+        "latency_sec": 57.0,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 12,
+        "dish_name": "Kothimbir Vadi",
+        "latency_sec": 49.7,
+        "json_valid": true,
+        "validation_passed": false,
+        "failures_count": 5
+      },
+      {
+        "case_num": 13,
+        "dish_name": "Alu Vadi / Patra",
+        "latency_sec": 55.9,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 14,
+        "dish_name": "Poha Chivda",
+        "latency_sec": 36.7,
+        "json_valid": true,
+        "validation_passed": true,
+        "failures_count": 0
+      },
+      {
+        "case_num": 15,
+        "dish_name": "Pav Bhaji",
+        "latency_sec": 52.3,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 16,
+        "dish_name": "Sev Pav",
+        "latency_sec": 58.9,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 17,
+        "dish_name": "Puri Bhaji",
+        "latency_sec": 64.1,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      },
+      {
+        "case_num": 18,
+        "dish_name": "Pithla",
+        "latency_sec": 62.6,
+        "json_valid": false,
+        "validation_passed": false,
+        "failures_count": 1
+      }
+    ],
+    "json_valid_pct": 27.8,
+    "validation_pass_pct": 11.1,
+    "avg_seconds": 54.03,
+    "reviewer_rating": ""
+  }
+}

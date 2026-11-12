@@ -162,14 +162,30 @@ curl.exe -s -i -X POST http://127.0.0.1:8000/detect -F 'image=@README.md;type=te
 curl.exe -s -i -X POST http://127.0.0.1:8000/detect -F 'not_image=@tests\images\onion_01.jpg;type=image/jpeg'
 curl.exe -s -i -X POST http://127.0.0.1:8000/detect -F 'image=@tests\large_test_file.jpg;type=image/jpeg'
 
-# 5. Scorer API tests
-curl.exe -s http://127.0.0.1:8000/dishes/example
-curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req1.json
-curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req2.json
-curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req3.json
-curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req4.json
-curl.exe -s -X POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' --data-binary @tests/sample_requests/req5.json
+
+---
+
+## Layer 3 — Recipe Writer Endpoint & Decision Header Evaluation
+
+Layer 3 implements `POST /recipe/generate` using a strict code-built `[DECISION ...]` header, 8 structural validators (JSON schema, dish match, allowed ingredients, quantity scaling, allergen checks, 3-10 steps, time adherence, spice blend constraints), and a fallback mechanism to verified stored catalog recipes when validation fails or `LLM_MODE=off`.
+
+### Commands Executed:
+```powershell
+# 1. Writer unit tests & validator test suite
+.\venv\Scripts\python.exe -m unittest -v tests/test_writer.py
+
+# 2. Evaluation benchmark across 4 model/prompt configurations
+.\venv\Scripts\python.exe -u tests/eval_writer.py
+
+# 3. Live API recipe generation tests (LLM_MODE=off)
+curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req1.json
+curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req2.json
+curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req3.json
+
+# 4. Fallback verification test under LLM_MODE=adapter (verifies safe HTTP 200 catalog fallback on failure, never 500)
+curl.exe -s -X POST http://127.0.0.1:8000/recipe/generate -H "Content-Type: application/json" --data-binary @tests/sample_requests/recipe_req_adapter.json
 ```
+
 
 
 

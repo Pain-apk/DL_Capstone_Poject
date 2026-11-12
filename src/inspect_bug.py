@@ -34,3 +34,4 @@ for i, r in df.iterrows():
             print(f"  iq: {iq}")
 
 print(f"\nTotal broken rows identified: {broken_count}")
+

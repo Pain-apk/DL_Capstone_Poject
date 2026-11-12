@@ -1,0 +1,10 @@
+{
+  "dish_id": "pav_bhaji",
+  "ingredients": ["potato", "cauliflower", "green peas", "capsicum", "onion", "tomato"],
+  "pantry": ["butter", "pav bhaji masala", "ginger", "garlic", "salt"],
+  "servings": 2.0,
+  "time_limit": 40,
+  "allergens": [],
+  "vegetarian_only": true
+}
+
